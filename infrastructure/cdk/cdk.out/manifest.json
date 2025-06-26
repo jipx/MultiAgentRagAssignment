@@ -1,0 +1,275 @@
+{
+  "version": "36.0.0",
+  "artifacts": {
+    "MultiAgentStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MultiAgentStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MultiAgentStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://628902727523/ap-northeast-1",
+      "properties": {
+        "templateFile": "MultiAgentStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-deploy-role-628902727523-ap-northeast-1",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-cfn-exec-role-628902727523-ap-northeast-1",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-628902727523-ap-northeast-1/95074c235f9e57eae548eba47afe8cd97688c2c6c7561e6caa06f481a5ad4f60.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MultiAgentStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-lookup-role-628902727523-ap-northeast-1",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MultiAgentStack.assets"
+      ],
+      "metadata": {
+        "/MultiAgentStack/RAGDLQ/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGDLQDCE342F2"
+          }
+        ],
+        "/MultiAgentStack/RAGQueryQueue/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGQueryQueueE7AA1C2D"
+          }
+        ],
+        "/MultiAgentStack/ResponseTable/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseTable0CB27BF7"
+          }
+        ],
+        "/MultiAgentStack/SubmitLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubmitLambdaServiceRole98C85C39"
+          }
+        ],
+        "/MultiAgentStack/SubmitLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubmitLambdaServiceRoleDefaultPolicy52AC7FF0"
+          }
+        ],
+        "/MultiAgentStack/SubmitLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubmitLambda8054545E"
+          }
+        ],
+        "/MultiAgentStack/WorkerLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkerLambdaServiceRole33A0380F"
+          }
+        ],
+        "/MultiAgentStack/WorkerLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkerLambdaServiceRoleDefaultPolicyFC3707DA"
+          }
+        ],
+        "/MultiAgentStack/WorkerLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkerLambdaBD11C0E2"
+          }
+        ],
+        "/MultiAgentStack/WorkerLambda/SqsEventSource:MultiAgentStackRAGQueryQueue18E4E3D1/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkerLambdaSqsEventSourceMultiAgentStackRAGQueryQueue18E4E3D1E4C00FC9"
+          }
+        ],
+        "/MultiAgentStack/GetAnswerLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAnswerLambdaServiceRole64FB696C"
+          }
+        ],
+        "/MultiAgentStack/GetAnswerLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAnswerLambdaServiceRoleDefaultPolicyB16EF149"
+          }
+        ],
+        "/MultiAgentStack/GetAnswerLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAnswerLambda6BA36A71"
+          }
+        ],
+        "/MultiAgentStack/GetHistoryLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetHistoryLambdaServiceRoleFF770ACA"
+          }
+        ],
+        "/MultiAgentStack/GetHistoryLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetHistoryLambdaServiceRoleDefaultPolicy4C9951C5"
+          }
+        ],
+        "/MultiAgentStack/GetHistoryLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetHistoryLambdaBE7887F3"
+          }
+        ],
+        "/MultiAgentStack/ApiGatewayAccessLogs/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiGatewayAccessLogsFB871B4C"
+          }
+        ],
+        "/MultiAgentStack/ApiGatewayCloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiGatewayCloudWatchRole86F22A4D"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIB3A8E7C6"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/CloudWatchRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPICloudWatchRole2D2981D4"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Account": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIAccount7DEDF533"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Deployment/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIDeployment292FFC9A8ef980ba73890f1438de5fd64835bc60"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/DeploymentStage.prod/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIDeploymentStageprodB82550D9"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Endpoint": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIEndpoint323577B6"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/ask/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIaskB6BD6581"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/ask/POST/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIaskPOSTApiPermissionMultiAgentStackRAGMultiAgentAPI9107A53BPOSTaskE55D3F5A"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/ask/POST/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIaskPOSTApiPermissionTestMultiAgentStackRAGMultiAgentAPI9107A53BPOSTask48786D2C"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/ask/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIaskPOST16E40B6B"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/ask/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIaskOPTIONS5BDE296D"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetanswerFD8B4365"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetanswerGETApiPermissionMultiAgentStackRAGMultiAgentAPI9107A53BGETgetanswer925E14D5"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetanswerGETApiPermissionTestMultiAgentStackRAGMultiAgentAPI9107A53BGETgetanswer026DA34A"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetanswerGET2F42ABC2"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetanswerOPTIONSEE6DE109"
+          }
+        ],
+        "/MultiAgentStack/DLQAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DLQAlarm77626DBA"
+          }
+        ],
+        "/MultiAgentStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/MultiAgentStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MultiAgentStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MultiAgentStack"
+    },
+    "Tree": {
+      "type": "cdk:tree",
+      "properties": {
+        "file": "tree.json"
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "model_name": "Claude",
+  "model_id": "anthropic.claude-v2",
+  "kb_id": "owasp-kb-001",
+  "rag_endpoint_url": "https://bedrock-runtime.ap-southeast-1.amazonaws.com"
+}

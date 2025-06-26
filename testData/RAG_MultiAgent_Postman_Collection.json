@@ -1,0 +1,83 @@
+{
+  "info": {
+    "name": "RAG Multi-Agent API",
+    "_postman_id": "rag-multi-agent-api",
+    "description": "Postman collection for testing the RAG Multi-Agent API with environment variable for base_url.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "POST Ask",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"request_id\": \"test-{{$timestamp}}\",\n    \"user_id\": \"postman-user\",\n    \"question\": \"What is XSS?\",\n    \"topic\": \"owasp\",\n    \"timestamp\": \"{{$isoTimestamp}}\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/ask",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "ask"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET Get Answer",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/get-answer?request_id=test-12345",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "get-answer"
+          ],
+          "query": [
+            {
+              "key": "request_id",
+              "value": "test-12345"
+            }
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET History",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/history?user_id=postman-user",
+          "host": [
+            "{{base_url}}"
+          ],
+          "path": [
+            "history"
+          ],
+          "query": [
+            {
+              "key": "user_id",
+              "value": "postman-user"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}

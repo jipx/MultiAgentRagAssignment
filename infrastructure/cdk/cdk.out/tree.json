@@ -1,0 +1,1709 @@
+{
+  "version": "tree-0.1",
+  "tree": {
+    "id": "App",
+    "path": "",
+    "children": {
+      "MultiAgentStack": {
+        "id": "MultiAgentStack",
+        "path": "MultiAgentStack",
+        "children": {
+          "RAGDLQ": {
+            "id": "RAGDLQ",
+            "path": "MultiAgentStack/RAGDLQ",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/RAGDLQ/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "messageRetentionPeriod": 1209600,
+                    "queueName": "RAGWorkerDLQ"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "2.128.0"
+            }
+          },
+          "RAGQueryQueue": {
+            "id": "RAGQueryQueue",
+            "path": "MultiAgentStack/RAGQueryQueue",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/RAGQueryQueue/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::SQS::Queue",
+                  "aws:cdk:cloudformation:props": {
+                    "queueName": "RAGQueryQueue",
+                    "redrivePolicy": {
+                      "deadLetterTargetArn": {
+                        "Fn::GetAtt": [
+                          "RAGDLQDCE342F2",
+                          "Arn"
+                        ]
+                      },
+                      "maxReceiveCount": 3
+                    },
+                    "visibilityTimeout": 50
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_sqs.CfnQueue",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_sqs.Queue",
+              "version": "2.128.0"
+            }
+          },
+          "ResponseTable": {
+            "id": "ResponseTable",
+            "path": "MultiAgentStack/ResponseTable",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/ResponseTable/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::DynamoDB::Table",
+                  "aws:cdk:cloudformation:props": {
+                    "attributeDefinitions": [
+                      {
+                        "attributeName": "request_id",
+                        "attributeType": "S"
+                      }
+                    ],
+                    "billingMode": "PAY_PER_REQUEST",
+                    "keySchema": [
+                      {
+                        "attributeName": "request_id",
+                        "keyType": "HASH"
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_dynamodb.CfnTable",
+                  "version": "2.128.0"
+                }
+              },
+              "ScalingRole": {
+                "id": "ScalingRole",
+                "path": "MultiAgentStack/ResponseTable/ScalingRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_dynamodb.Table",
+              "version": "2.128.0"
+            }
+          },
+          "SubmitLambda": {
+            "id": "SubmitLambda",
+            "path": "MultiAgentStack/SubmitLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "MultiAgentStack/SubmitLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "MultiAgentStack/SubmitLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/SubmitLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "MultiAgentStack/SubmitLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiAgentStack/SubmitLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "sqs:SendMessage",
+                                    "sqs:GetQueueAttributes",
+                                    "sqs:GetQueueUrl"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "RAGQueryQueueE7AA1C2D",
+                                      "Arn"
+                                    ]
+                                  }
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "SubmitLambdaServiceRoleDefaultPolicy52AC7FF0",
+                            "roles": [
+                              {
+                                "Ref": "SubmitLambdaServiceRole98C85C39"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.128.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.128.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "MultiAgentStack/SubmitLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "MultiAgentStack/SubmitLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "MultiAgentStack/SubmitLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.128.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/SubmitLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-628902727523-ap-northeast-1",
+                      "s3Key": "dea9bb2a8bdd64204c9698f36d5e67a2425eb66fe0aac29c7872639389e7b889.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "QUEUE_URL": {
+                          "Ref": "RAGQueryQueueE7AA1C2D"
+                        }
+                      }
+                    },
+                    "handler": "lambda_function.lambda_handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "SubmitLambdaServiceRole98C85C39",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.11"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.128.0"
+            }
+          },
+          "WorkerLambda": {
+            "id": "WorkerLambda",
+            "path": "MultiAgentStack/WorkerLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "MultiAgentStack/WorkerLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "MultiAgentStack/WorkerLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/WorkerLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "MultiAgentStack/WorkerLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiAgentStack/WorkerLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "sqs:ReceiveMessage",
+                                    "sqs:ChangeMessageVisibility",
+                                    "sqs:GetQueueUrl",
+                                    "sqs:DeleteMessage",
+                                    "sqs:GetQueueAttributes"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": {
+                                    "Fn::GetAtt": [
+                                      "RAGQueryQueueE7AA1C2D",
+                                      "Arn"
+                                    ]
+                                  }
+                                },
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchWriteItem",
+                                    "dynamodb:PutItem",
+                                    "dynamodb:UpdateItem",
+                                    "dynamodb:DeleteItem",
+                                    "dynamodb:DescribeTable"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "ResponseTable0CB27BF7",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Ref": "AWS::NoValue"
+                                    }
+                                  ]
+                                },
+                                {
+                                  "Action": "bedrock:*",
+                                  "Effect": "Allow",
+                                  "Resource": "*"
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "WorkerLambdaServiceRoleDefaultPolicyFC3707DA",
+                            "roles": [
+                              {
+                                "Ref": "WorkerLambdaServiceRole33A0380F"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.128.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.128.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "MultiAgentStack/WorkerLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "MultiAgentStack/WorkerLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "MultiAgentStack/WorkerLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.128.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/WorkerLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-628902727523-ap-northeast-1",
+                      "s3Key": "c8018943e5c8e5f4de72661dbf01357da617ed72ef14c428bda21588aa2a1609.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "MODEL_NAME": "Claude",
+                        "MODEL_ID": "anthropic.claude-3-5-sonnet-20240620-v1:0",
+                        "KB_ID": "TTM1S81PC3",
+                        "RAG_ENDPOINT_URL": "https://bedrock-runtime.ap-southeast-1.amazonaws.com",
+                        "TABLE_NAME": {
+                          "Ref": "ResponseTable0CB27BF7"
+                        }
+                      }
+                    },
+                    "handler": "lambda_function.lambda_handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "WorkerLambdaServiceRole33A0380F",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.11",
+                    "timeout": 50
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.128.0"
+                }
+              },
+              "SqsEventSource:MultiAgentStackRAGQueryQueue18E4E3D1": {
+                "id": "SqsEventSource:MultiAgentStackRAGQueryQueue18E4E3D1",
+                "path": "MultiAgentStack/WorkerLambda/SqsEventSource:MultiAgentStackRAGQueryQueue18E4E3D1",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/WorkerLambda/SqsEventSource:MultiAgentStackRAGQueryQueue18E4E3D1/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::Lambda::EventSourceMapping",
+                      "aws:cdk:cloudformation:props": {
+                        "batchSize": 1,
+                        "eventSourceArn": {
+                          "Fn::GetAtt": [
+                            "RAGQueryQueueE7AA1C2D",
+                            "Arn"
+                          ]
+                        },
+                        "functionName": {
+                          "Ref": "WorkerLambdaBD11C0E2"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_lambda.CfnEventSourceMapping",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.EventSourceMapping",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.128.0"
+            }
+          },
+          "GetAnswerLambda": {
+            "id": "GetAnswerLambda",
+            "path": "MultiAgentStack/GetAnswerLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "MultiAgentStack/GetAnswerLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "MultiAgentStack/GetAnswerLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/GetAnswerLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "MultiAgentStack/GetAnswerLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiAgentStack/GetAnswerLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:Query",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:Scan",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:DescribeTable"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "ResponseTable0CB27BF7",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Ref": "AWS::NoValue"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "GetAnswerLambdaServiceRoleDefaultPolicyB16EF149",
+                            "roles": [
+                              {
+                                "Ref": "GetAnswerLambdaServiceRole64FB696C"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.128.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.128.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "MultiAgentStack/GetAnswerLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "MultiAgentStack/GetAnswerLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "MultiAgentStack/GetAnswerLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.128.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/GetAnswerLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-628902727523-ap-northeast-1",
+                      "s3Key": "f36e54eb50b0b3c5a3dec54a66dd1ebf81b26ce1dc0bd88ec5936d261d7adacc.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "TABLE_NAME": {
+                          "Ref": "ResponseTable0CB27BF7"
+                        }
+                      }
+                    },
+                    "handler": "lambda_function.lambda_handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "GetAnswerLambdaServiceRole64FB696C",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.11"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.128.0"
+            }
+          },
+          "GetHistoryLambda": {
+            "id": "GetHistoryLambda",
+            "path": "MultiAgentStack/GetHistoryLambda",
+            "children": {
+              "ServiceRole": {
+                "id": "ServiceRole",
+                "path": "MultiAgentStack/GetHistoryLambda/ServiceRole",
+                "children": {
+                  "ImportServiceRole": {
+                    "id": "ImportServiceRole",
+                    "path": "MultiAgentStack/GetHistoryLambda/ServiceRole/ImportServiceRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/GetHistoryLambda/ServiceRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "lambda.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "DefaultPolicy": {
+                    "id": "DefaultPolicy",
+                    "path": "MultiAgentStack/GetHistoryLambda/ServiceRole/DefaultPolicy",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiAgentStack/GetHistoryLambda/ServiceRole/DefaultPolicy/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::IAM::Policy",
+                          "aws:cdk:cloudformation:props": {
+                            "policyDocument": {
+                              "Statement": [
+                                {
+                                  "Action": [
+                                    "dynamodb:BatchGetItem",
+                                    "dynamodb:GetRecords",
+                                    "dynamodb:GetShardIterator",
+                                    "dynamodb:Query",
+                                    "dynamodb:GetItem",
+                                    "dynamodb:Scan",
+                                    "dynamodb:ConditionCheckItem",
+                                    "dynamodb:DescribeTable"
+                                  ],
+                                  "Effect": "Allow",
+                                  "Resource": [
+                                    {
+                                      "Fn::GetAtt": [
+                                        "ResponseTable0CB27BF7",
+                                        "Arn"
+                                      ]
+                                    },
+                                    {
+                                      "Ref": "AWS::NoValue"
+                                    }
+                                  ]
+                                }
+                              ],
+                              "Version": "2012-10-17"
+                            },
+                            "policyName": "GetHistoryLambdaServiceRoleDefaultPolicy4C9951C5",
+                            "roles": [
+                              {
+                                "Ref": "GetHistoryLambdaServiceRoleFF770ACA"
+                              }
+                            ]
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_iam.CfnPolicy",
+                          "version": "2.128.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.Policy",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.128.0"
+                }
+              },
+              "Code": {
+                "id": "Code",
+                "path": "MultiAgentStack/GetHistoryLambda/Code",
+                "children": {
+                  "Stage": {
+                    "id": "Stage",
+                    "path": "MultiAgentStack/GetHistoryLambda/Code/Stage",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.AssetStaging",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "AssetBucket": {
+                    "id": "AssetBucket",
+                    "path": "MultiAgentStack/GetHistoryLambda/Code/AssetBucket",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_s3.BucketBase",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_s3_assets.Asset",
+                  "version": "2.128.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/GetHistoryLambda/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Lambda::Function",
+                  "aws:cdk:cloudformation:props": {
+                    "code": {
+                      "s3Bucket": "cdk-hnb659fds-assets-628902727523-ap-northeast-1",
+                      "s3Key": "3320794cd22f527004eed89f3527dea2075ea4bd035fef6636baaa96f5ea756a.zip"
+                    },
+                    "environment": {
+                      "variables": {
+                        "TABLE_NAME": {
+                          "Ref": "ResponseTable0CB27BF7"
+                        }
+                      }
+                    },
+                    "handler": "lambda_function.lambda_handler",
+                    "role": {
+                      "Fn::GetAtt": [
+                        "GetHistoryLambdaServiceRoleFF770ACA",
+                        "Arn"
+                      ]
+                    },
+                    "runtime": "python3.11"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_lambda.CfnFunction",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_lambda.Function",
+              "version": "2.128.0"
+            }
+          },
+          "ApiGatewayAccessLogs": {
+            "id": "ApiGatewayAccessLogs",
+            "path": "MultiAgentStack/ApiGatewayAccessLogs",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/ApiGatewayAccessLogs/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::Logs::LogGroup",
+                  "aws:cdk:cloudformation:props": {
+                    "retentionInDays": 731
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_logs.CfnLogGroup",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_logs.LogGroup",
+              "version": "2.128.0"
+            }
+          },
+          "ApiGatewayCloudWatchRole": {
+            "id": "ApiGatewayCloudWatchRole",
+            "path": "MultiAgentStack/ApiGatewayCloudWatchRole",
+            "children": {
+              "ImportApiGatewayCloudWatchRole": {
+                "id": "ImportApiGatewayCloudWatchRole",
+                "path": "MultiAgentStack/ApiGatewayCloudWatchRole/ImportApiGatewayCloudWatchRole",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.Resource",
+                  "version": "2.128.0"
+                }
+              },
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/ApiGatewayCloudWatchRole/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                  "aws:cdk:cloudformation:props": {
+                    "assumeRolePolicyDocument": {
+                      "Statement": [
+                        {
+                          "Action": "sts:AssumeRole",
+                          "Effect": "Allow",
+                          "Principal": {
+                            "Service": "apigateway.amazonaws.com"
+                          }
+                        }
+                      ],
+                      "Version": "2012-10-17"
+                    },
+                    "managedPolicyArns": [
+                      {
+                        "Fn::Join": [
+                          "",
+                          [
+                            "arn:",
+                            {
+                              "Ref": "AWS::Partition"
+                            },
+                            ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                          ]
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_iam.Role",
+              "version": "2.128.0"
+            }
+          },
+          "RAGMultiAgentAPI": {
+            "id": "RAGMultiAgentAPI",
+            "path": "MultiAgentStack/RAGMultiAgentAPI",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/RAGMultiAgentAPI/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::RestApi",
+                  "aws:cdk:cloudformation:props": {
+                    "name": "RAG Multi-Agent API"
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnRestApi",
+                  "version": "2.128.0"
+                }
+              },
+              "CloudWatchRole": {
+                "id": "CloudWatchRole",
+                "path": "MultiAgentStack/RAGMultiAgentAPI/CloudWatchRole",
+                "children": {
+                  "ImportCloudWatchRole": {
+                    "id": "ImportCloudWatchRole",
+                    "path": "MultiAgentStack/RAGMultiAgentAPI/CloudWatchRole/ImportCloudWatchRole",
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.Resource",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/RAGMultiAgentAPI/CloudWatchRole/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::IAM::Role",
+                      "aws:cdk:cloudformation:props": {
+                        "assumeRolePolicyDocument": {
+                          "Statement": [
+                            {
+                              "Action": "sts:AssumeRole",
+                              "Effect": "Allow",
+                              "Principal": {
+                                "Service": "apigateway.amazonaws.com"
+                              }
+                            }
+                          ],
+                          "Version": "2012-10-17"
+                        },
+                        "managedPolicyArns": [
+                          {
+                            "Fn::Join": [
+                              "",
+                              [
+                                "arn:",
+                                {
+                                  "Ref": "AWS::Partition"
+                                },
+                                ":iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs"
+                              ]
+                            ]
+                          }
+                        ]
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_iam.CfnRole",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_iam.Role",
+                  "version": "2.128.0"
+                }
+              },
+              "Account": {
+                "id": "Account",
+                "path": "MultiAgentStack/RAGMultiAgentAPI/Account",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::ApiGateway::Account",
+                  "aws:cdk:cloudformation:props": {
+                    "cloudWatchRoleArn": {
+                      "Fn::GetAtt": [
+                        "RAGMultiAgentAPICloudWatchRole2D2981D4",
+                        "Arn"
+                      ]
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.CfnAccount",
+                  "version": "2.128.0"
+                }
+              },
+              "Deployment": {
+                "id": "Deployment",
+                "path": "MultiAgentStack/RAGMultiAgentAPI/Deployment",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/RAGMultiAgentAPI/Deployment/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Deployment",
+                      "aws:cdk:cloudformation:props": {
+                        "description": "Automatically created by the RestApi construct",
+                        "restApiId": {
+                          "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnDeployment",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Deployment",
+                  "version": "2.128.0"
+                }
+              },
+              "DeploymentStage.prod": {
+                "id": "DeploymentStage.prod",
+                "path": "MultiAgentStack/RAGMultiAgentAPI/DeploymentStage.prod",
+                "children": {
+                  "Resource": {
+                    "id": "Resource",
+                    "path": "MultiAgentStack/RAGMultiAgentAPI/DeploymentStage.prod/Resource",
+                    "attributes": {
+                      "aws:cdk:cloudformation:type": "AWS::ApiGateway::Stage",
+                      "aws:cdk:cloudformation:props": {
+                        "accessLogSetting": {
+                          "destinationArn": {
+                            "Fn::GetAtt": [
+                              "ApiGatewayAccessLogsFB871B4C",
+                              "Arn"
+                            ]
+                          },
+                          "format": "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"caller\":\"$context.identity.caller\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
+                        },
+                        "deploymentId": {
+                          "Ref": "RAGMultiAgentAPIDeployment292FFC9A8ef980ba73890f1438de5fd64835bc60"
+                        },
+                        "methodSettings": [
+                          {
+                            "httpMethod": "*",
+                            "resourcePath": "/*",
+                            "dataTraceEnabled": true,
+                            "loggingLevel": "INFO",
+                            "throttlingBurstLimit": 5,
+                            "throttlingRateLimit": 10
+                          }
+                        ],
+                        "restApiId": {
+                          "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                        },
+                        "stageName": "prod"
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.CfnStage",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.Stage",
+                  "version": "2.128.0"
+                }
+              },
+              "Endpoint": {
+                "id": "Endpoint",
+                "path": "MultiAgentStack/RAGMultiAgentAPI/Endpoint",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnOutput",
+                  "version": "2.128.0"
+                }
+              },
+              "Default": {
+                "id": "Default",
+                "path": "MultiAgentStack/RAGMultiAgentAPI/Default",
+                "children": {
+                  "ask": {
+                    "id": "ask",
+                    "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "RAGMultiAgentAPIB3A8E7C6",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "ask",
+                            "restApiId": {
+                              "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.128.0"
+                        }
+                      },
+                      "POST": {
+                        "id": "POST",
+                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask/POST",
+                        "children": {
+                          "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask": {
+                            "id": "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask/POST/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "SubmitLambda8054545E",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:ap-northeast-1:628902727523:",
+                                      {
+                                        "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "RAGMultiAgentAPIDeploymentStageprodB82550D9"
+                                      },
+                                      "/POST/ask"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.128.0"
+                            }
+                          },
+                          "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask": {
+                            "id": "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask/POST/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..ask",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "SubmitLambda8054545E",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:ap-northeast-1:628902727523:",
+                                      {
+                                        "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                      },
+                                      "/test-invoke-stage/POST/ask"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.128.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask/POST/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "POST",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "SubmitLambda8054545E",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "RAGMultiAgentAPIaskB6BD6581"
+                                },
+                                "restApiId": {
+                                  "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.128.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.128.0"
+                        }
+                      },
+                      "OPTIONS": {
+                        "id": "OPTIONS",
+                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask/OPTIONS",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/ask/OPTIONS/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "apiKeyRequired": false,
+                                "authorizationType": "NONE",
+                                "httpMethod": "OPTIONS",
+                                "integration": {
+                                  "type": "MOCK",
+                                  "requestTemplates": {
+                                    "application/json": "{ statusCode: 200 }"
+                                  },
+                                  "integrationResponses": [
+                                    {
+                                      "statusCode": "204",
+                                      "responseParameters": {
+                                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                                        "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                        "method.response.header.Access-Control-Allow-Methods": "'POST'"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "methodResponses": [
+                                  {
+                                    "statusCode": "204",
+                                    "responseParameters": {
+                                      "method.response.header.Access-Control-Allow-Headers": true,
+                                      "method.response.header.Access-Control-Allow-Origin": true,
+                                      "method.response.header.Access-Control-Allow-Methods": true
+                                    }
+                                  }
+                                ],
+                                "resourceId": {
+                                  "Ref": "RAGMultiAgentAPIaskB6BD6581"
+                                },
+                                "restApiId": {
+                                  "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.128.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.128.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.128.0"
+                    }
+                  },
+                  "get-answer": {
+                    "id": "get-answer",
+                    "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer",
+                    "children": {
+                      "Resource": {
+                        "id": "Resource",
+                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/Resource",
+                        "attributes": {
+                          "aws:cdk:cloudformation:type": "AWS::ApiGateway::Resource",
+                          "aws:cdk:cloudformation:props": {
+                            "parentId": {
+                              "Fn::GetAtt": [
+                                "RAGMultiAgentAPIB3A8E7C6",
+                                "RootResourceId"
+                              ]
+                            },
+                            "pathPart": "get-answer",
+                            "restApiId": {
+                              "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.CfnResource",
+                          "version": "2.128.0"
+                        }
+                      },
+                      "GET": {
+                        "id": "GET",
+                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET",
+                        "children": {
+                          "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer": {
+                            "id": "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "GetAnswerLambda6BA36A71",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:ap-northeast-1:628902727523:",
+                                      {
+                                        "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                      },
+                                      "/",
+                                      {
+                                        "Ref": "RAGMultiAgentAPIDeploymentStageprodB82550D9"
+                                      },
+                                      "/GET/get-answer"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.128.0"
+                            }
+                          },
+                          "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer": {
+                            "id": "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
+                              "aws:cdk:cloudformation:props": {
+                                "action": "lambda:InvokeFunction",
+                                "functionName": {
+                                  "Fn::GetAtt": [
+                                    "GetAnswerLambda6BA36A71",
+                                    "Arn"
+                                  ]
+                                },
+                                "principal": "apigateway.amazonaws.com",
+                                "sourceArn": {
+                                  "Fn::Join": [
+                                    "",
+                                    [
+                                      "arn:",
+                                      {
+                                        "Ref": "AWS::Partition"
+                                      },
+                                      ":execute-api:ap-northeast-1:628902727523:",
+                                      {
+                                        "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                      },
+                                      "/test-invoke-stage/GET/get-answer"
+                                    ]
+                                  ]
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_lambda.CfnPermission",
+                              "version": "2.128.0"
+                            }
+                          },
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "authorizationType": "NONE",
+                                "httpMethod": "GET",
+                                "integration": {
+                                  "type": "AWS_PROXY",
+                                  "uri": {
+                                    "Fn::Join": [
+                                      "",
+                                      [
+                                        "arn:",
+                                        {
+                                          "Ref": "AWS::Partition"
+                                        },
+                                        ":apigateway:ap-northeast-1:lambda:path/2015-03-31/functions/",
+                                        {
+                                          "Fn::GetAtt": [
+                                            "GetAnswerLambda6BA36A71",
+                                            "Arn"
+                                          ]
+                                        },
+                                        "/invocations"
+                                      ]
+                                    ]
+                                  },
+                                  "integrationHttpMethod": "POST"
+                                },
+                                "resourceId": {
+                                  "Ref": "RAGMultiAgentAPIgetanswerFD8B4365"
+                                },
+                                "restApiId": {
+                                  "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.128.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.128.0"
+                        }
+                      },
+                      "OPTIONS": {
+                        "id": "OPTIONS",
+                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/OPTIONS",
+                        "children": {
+                          "Resource": {
+                            "id": "Resource",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/OPTIONS/Resource",
+                            "attributes": {
+                              "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
+                              "aws:cdk:cloudformation:props": {
+                                "apiKeyRequired": false,
+                                "authorizationType": "NONE",
+                                "httpMethod": "OPTIONS",
+                                "integration": {
+                                  "type": "MOCK",
+                                  "requestTemplates": {
+                                    "application/json": "{ statusCode: 200 }"
+                                  },
+                                  "integrationResponses": [
+                                    {
+                                      "statusCode": "204",
+                                      "responseParameters": {
+                                        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                                        "method.response.header.Access-Control-Allow-Origin": "'*'",
+                                        "method.response.header.Access-Control-Allow-Methods": "'GET'"
+                                      }
+                                    }
+                                  ]
+                                },
+                                "methodResponses": [
+                                  {
+                                    "statusCode": "204",
+                                    "responseParameters": {
+                                      "method.response.header.Access-Control-Allow-Headers": true,
+                                      "method.response.header.Access-Control-Allow-Origin": true,
+                                      "method.response.header.Access-Control-Allow-Methods": true
+                                    }
+                                  }
+                                ],
+                                "resourceId": {
+                                  "Ref": "RAGMultiAgentAPIgetanswerFD8B4365"
+                                },
+                                "restApiId": {
+                                  "Ref": "RAGMultiAgentAPIB3A8E7C6"
+                                }
+                              }
+                            },
+                            "constructInfo": {
+                              "fqn": "aws-cdk-lib.aws_apigateway.CfnMethod",
+                              "version": "2.128.0"
+                            }
+                          }
+                        },
+                        "constructInfo": {
+                          "fqn": "aws-cdk-lib.aws_apigateway.Method",
+                          "version": "2.128.0"
+                        }
+                      }
+                    },
+                    "constructInfo": {
+                      "fqn": "aws-cdk-lib.aws_apigateway.Resource",
+                      "version": "2.128.0"
+                    }
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_apigateway.ResourceBase",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_apigateway.RestApi",
+              "version": "2.128.0"
+            }
+          },
+          "DLQAlarm": {
+            "id": "DLQAlarm",
+            "path": "MultiAgentStack/DLQAlarm",
+            "children": {
+              "Resource": {
+                "id": "Resource",
+                "path": "MultiAgentStack/DLQAlarm/Resource",
+                "attributes": {
+                  "aws:cdk:cloudformation:type": "AWS::CloudWatch::Alarm",
+                  "aws:cdk:cloudformation:props": {
+                    "alarmDescription": "DLQ has messages pending!",
+                    "comparisonOperator": "GreaterThanOrEqualToThreshold",
+                    "dimensions": [
+                      {
+                        "name": "QueueName",
+                        "value": {
+                          "Fn::GetAtt": [
+                            "RAGDLQDCE342F2",
+                            "QueueName"
+                          ]
+                        }
+                      }
+                    ],
+                    "evaluationPeriods": 1,
+                    "metricName": "ApproximateNumberOfMessagesVisible",
+                    "namespace": "AWS/SQS",
+                    "period": 300,
+                    "statistic": "Maximum",
+                    "threshold": 1
+                  }
+                },
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.aws_cloudwatch.CfnAlarm",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.aws_cloudwatch.Alarm",
+              "version": "2.128.0"
+            }
+          },
+          "CDKMetadata": {
+            "id": "CDKMetadata",
+            "path": "MultiAgentStack/CDKMetadata",
+            "children": {
+              "Default": {
+                "id": "Default",
+                "path": "MultiAgentStack/CDKMetadata/Default",
+                "constructInfo": {
+                  "fqn": "aws-cdk-lib.CfnResource",
+                  "version": "2.128.0"
+                }
+              }
+            },
+            "constructInfo": {
+              "fqn": "constructs.Construct",
+              "version": "10.4.2"
+            }
+          },
+          "BootstrapVersion": {
+            "id": "BootstrapVersion",
+            "path": "MultiAgentStack/BootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnParameter",
+              "version": "2.128.0"
+            }
+          },
+          "CheckBootstrapVersion": {
+            "id": "CheckBootstrapVersion",
+            "path": "MultiAgentStack/CheckBootstrapVersion",
+            "constructInfo": {
+              "fqn": "aws-cdk-lib.CfnRule",
+              "version": "2.128.0"
+            }
+          }
+        },
+        "constructInfo": {
+          "fqn": "aws-cdk-lib.Stack",
+          "version": "2.128.0"
+        }
+      },
+      "Tree": {
+        "id": "Tree",
+        "path": "Tree",
+        "constructInfo": {
+          "fqn": "constructs.Construct",
+          "version": "10.4.2"
+        }
+      }
+    },
+    "constructInfo": {
+      "fqn": "aws-cdk-lib.App",
+      "version": "2.128.0"
+    }
+  }
+}
