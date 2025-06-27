@@ -58,7 +58,7 @@ def handle_owasp_question(question: str, difficulty: int = None) -> str:
             "messages": [
                 {"role": "user", "content": full_prompt}
             ],
-            "max_tokens": 1500,
+            "max_tokens": 500,
             "temperature": 0.4
         }),
         contentType="application/json",

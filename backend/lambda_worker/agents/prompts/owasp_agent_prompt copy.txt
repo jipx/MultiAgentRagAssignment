@@ -42,6 +42,3 @@ Difficulty level: {{ difficulty_level }}
 
 Now analyze the following question:
 {question}
-
-At the end of your answer, include follow-up suggestions in this JSON format:
-{"follow_up": ["question 1", "question 2"]}

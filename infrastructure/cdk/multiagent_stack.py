@@ -32,7 +32,7 @@ class MultiAgentStack(Stack):
         rag_queue = sqs.Queue(
             self, "RAGQueryQueue",
             queue_name="RAGQueryQueue",
-            visibility_timeout=Duration.seconds(50),
+            visibility_timeout=Duration.seconds(40),
             dead_letter_queue=sqs.DeadLetterQueue(
                 max_receive_count=3,
                 queue=dead_letter_queue
