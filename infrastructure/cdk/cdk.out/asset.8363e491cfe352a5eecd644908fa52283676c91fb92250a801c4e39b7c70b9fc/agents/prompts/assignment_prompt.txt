@@ -1,0 +1,7 @@
+{
+  "answer": "<Your main answer here>",
+  "follow_up": "<A follow-up question or clarifying suggestion>"
+}
+
+Now process the following question:
+{question}
