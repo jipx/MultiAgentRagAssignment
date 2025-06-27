@@ -20,6 +20,12 @@ Your responses must follow these rules:
 Always end your response with:
 "Would you like to go deeper into this vulnerability or ask about another security topic?"
 
+Return your response in the following JSON format:
+
+{
+  "answer": "<Your detailed, student-friendly answer>",
+  "follow_up": "<A follow-up or clarifying question>"
+}
 
 Now analyze the following question:
 {question}

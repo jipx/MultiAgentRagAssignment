@@ -23,7 +23,16 @@ PROMPT_FILE = os.path.join(os.path.dirname(__file__), "prompts", "assignment_pro
 with open(PROMPT_FILE, "r", encoding="utf-8") as f:
     static_prompt = f.read().strip()
 
+# Define keywords that suggest the question is OWASP-related
+OWASP_KEYWORDS = [
+    "xss", "sql injection", "csrf", "cross-site", "authentication", "session",
+    "vulnerability", "input validation", "owasp", "top 10", "injection", "security risk"
+]
 
+def is_owasp_related(question: str) -> bool:
+    """Check if the question contains any OWASP-related keywords."""
+    lowered = question.lower()
+    return any(keyword in lowered for keyword in OWASP_KEYWORDS)
 
 def handle_assignment_question(question: str) -> str:
     """
@@ -32,7 +41,10 @@ def handle_assignment_question(question: str) -> str:
     """
     logger.info(f"Assignment Agent received question: {question}")
 
-   
+    if is_owasp_related(question):
+        logger.info("Detected OWASP-related keywords, routing to OWASP agent.")
+        return handle_owasp_question(question)
+
     full_input = f"{static_prompt}\n\nQuestion: {question}"
     response = bedrock_runtime.retrieve_and_generate(
         input={"text": full_input},
