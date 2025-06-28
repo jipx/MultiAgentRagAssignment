@@ -36,7 +36,7 @@ with tab1:
 
     # --- Always show follow-up input at the bottom ---
     st.markdown("### 💬 Ask a Question or Follow-up")
-    followup_input = st.text_input("Type your question here:", key="manual_followup_input")
+    followup_input = st.text_input("Type your question here:", key="manual_followup_input",max_chars=1000)
 
     ask_clicked = st.button("Ask", disabled=st.session_state["is_loading"])
 
