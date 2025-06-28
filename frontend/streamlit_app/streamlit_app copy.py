@@ -2,6 +2,7 @@ import streamlit as st
 import requests
 import json
 import time
+import re
 from datetime import datetime, timezone
 
 # --- API and Secrets ---
@@ -22,8 +23,19 @@ with tab1:
     question = st.text_area("📝 What is your question?", height=150)
     topic = st.selectbox("📚 Choose topic", ["assignment", "owasp", "assignment+owasp"])
 
+    if st.session_state.get("followup_submitted"):
+        question = st.session_state.get("followup_question", question)
+        st.session_state.pop("followup_submitted", None)
+
+    if st.session_state.get("followup_question") and not st.session_state.get("persisted_request_id"):
+        st.session_state["auto_ask_followup"] = True
+
     ask_disabled = st.session_state.get("persisted_request_id") is not None
-    if st.button("Ask", key="ask_button", disabled=ask_disabled) or st.session_state.get("retry_requested"):
+    if st.button("Ask", key="ask_button", disabled=ask_disabled) or \
+       st.session_state.get("retry_requested") or \
+       st.session_state.get("auto_ask_followup"):
+
+        st.session_state.pop("auto_ask_followup", None)
         st.session_state["retry_requested"] = False
 
         if not question.strip():
@@ -49,7 +61,6 @@ with tab1:
                     ask_response.raise_for_status()
                     ask_json = ask_response.json()
 
-                    # ✅ Extract `request_id` from nested message
                     ask_data = ask_json.get("message", {})
                     returned_request_id = ask_data.get("request_id")
 
@@ -95,6 +106,28 @@ with tab1:
                 st.success("✅ Answer")
                 st.markdown(answer_text)
                 st.session_state.pop("persisted_request_id", None)
+
+                def extract_follow_ups(answer):
+                    match = re.search(r'{\s*"follow_up"\s*:\s*\[.*?\]\s*}', answer, re.DOTALL)
+                    if match:
+                        try:
+                            return json.loads(match.group(0)).get("follow_up", [])
+                        except:
+                            return []
+                    return []
+
+                followup_options = extract_follow_ups(answer_text)
+                if followup_options:
+                    st.subheader("🔁 Follow-up Suggestions")
+                    selected_followup = st.radio("Choose a follow-up to ask:", followup_options, key="followup_choice")
+
+                    if st.button("🎯 Ask Follow-up Question"):
+                        st.session_state["followup_question"] = selected_followup
+                        st.session_state["followup_submitted"] = True
+                        st.session_state.pop("persisted_request_id", None)
+                        st.session_state["auto_ask_followup"] = True
+                        st.rerun()
+
             else:
                 st.warning("⚠️ No answer returned after multiple attempts.")
                 if st.button("🔁 Retry to Get Answer", key="retry_button"):
@@ -108,73 +141,3 @@ with tab1:
                 st.code(json.dumps(payload, indent=2), language="json")
                 st.code(json.dumps(ask_data, indent=2), language="json")
                 st.code(raw_response, language="json")
-
-
-# --- TAB 2: View My History ---
-with tab2:
-    st.subheader("📜 Your Q&A History")
-    hist_user_id = st.text_input("Enter your Student ID", value="student001")
-    if st.button("Fetch My History"):
-        try:
-            hist_response = requests.get(HISTORY_URL)
-            hist_response.raise_for_status()
-            history_data = hist_response.json()
-            user_history = [q for q in history_data if q.get("user_id") == hist_user_id]
-
-            if not user_history:
-                st.info("No questions found.")
-            else:
-                for i, record in enumerate(user_history, 1):
-                    with st.expander(f"📝 Q{i}: {record.get('question')[:50]}..."):
-                        st.markdown(f"**Topic:** {record.get('topic')}")
-                        st.markdown(f"**Question:** {record.get('question')}")
-                        st.markdown(f"**Answer:** {record.get('answer') or '_No answer yet_'}")
-                        st.markdown(f"**Time:** `{record.get('timestamp', 'N/A')}`")
-                        st.markdown(f"**Request ID:** `{record.get('request_id', 'N/A')}`")
-        except Exception as e:
-            st.error(f"⚠️ Could not fetch history: {e}")
-
-
-# --- TAB 3: Admin View ---
-with tab3:
-    st.subheader("🛡️ Admin Q&A Viewer")
-    admin_pass = st.text_input("Enter Admin Passcode", type="password")
-    if st.button("View All Q&A History"):
-        if admin_pass != ADMIN_PASSCODE:
-            st.error("🚫 Invalid admin passcode.")
-        else:
-            try:
-                response = requests.get(HISTORY_URL)
-                response.raise_for_status()
-                all_data = response.json()
-
-                with st.expander("🔍 Filter Q&A Records"):
-                    filter_user = st.text_input("Filter by Student ID (optional)")
-                    filter_topic = st.selectbox("Filter by Topic", ["all", "assignment", "owasp", "assignment+owasp"])
-                    limit_count = st.slider("Limit records", 1, 100, 30)
-
-                filtered = all_data
-                if filter_user:
-                    filtered = [q for q in filtered if q.get("user_id") == filter_user]
-                if filter_topic != "all":
-                    filtered = [q for q in filtered if q.get("topic") == filter_topic]
-
-                st.success(f"✅ Showing {min(len(filtered), limit_count)} of {len(filtered)} records")
-                for i, q in enumerate(filtered[:limit_count], 1):
-                    with st.expander(f"📄 Record {i} — {q.get('user_id')}"):
-                        st.markdown(f"**Topic:** {q.get('topic')}")
-                        st.markdown(f"**Question:** {q.get('question')}")
-                        st.markdown(f"**Answer:** {q.get('answer') or '_No answer yet_'}")
-                        st.markdown(f"**Time:** `{q.get('timestamp', 'N/A')}`")
-                        st.markdown(f"**Request ID:** `{q.get('request_id', 'N/A')}`")
-
-                        if st.button(f"🗑️ Delete Answer", key=f"delete_{i}"):
-                            try:
-                                del_url = f"{DELETE_URL}?request_id={q.get('request_id')}"
-                                del_response = requests.delete(del_url)
-                                del_response.raise_for_status()
-                                st.success("✅ Deleted successfully. Please refresh.")
-                            except Exception as e:
-                                st.error(f"❌ Failed to delete: {e}")
-            except Exception as e:
-                st.error(f"⚠️ Failed to retrieve history: {e}")

@@ -19,125 +19,120 @@ tab1, tab2, tab3 = st.tabs(["🔍 Ask a Question", "📜 View My History", "🛡
 
 # --- TAB 1: Ask a Question ---
 with tab1:
+    
+    # --- Top inputs ---
     user_id = st.text_input("👤 Student ID", value="student001", max_chars=10)
-    question = st.text_area("📝 What is your question?", height=150)
-    topic = st.selectbox("📚 Choose topic", ["assignment", "owasp", "assignment+owasp"])
+    topic = st.selectbox("📚 Choose a topic", ["assignment", "owasp", "assignment+owasp"])
 
-    if st.session_state.get("followup_submitted"):
-        question = st.session_state.get("followup_question", question)
-        st.session_state.pop("followup_submitted", None)
+    # --- Init session state ---
+    if "conversation" not in st.session_state:
+        st.session_state["conversation"] = []
+    if "ask_now" not in st.session_state:
+        st.session_state["ask_now"] = False
+    if "followup_question" not in st.session_state:
+        st.session_state["followup_question"] = ""
+    if "is_loading" not in st.session_state:
+        st.session_state["is_loading"] = False
 
-    if st.session_state.get("followup_question") and not st.session_state.get("persisted_request_id"):
-        st.session_state["auto_ask_followup"] = True
+    # --- Always show follow-up input at the bottom ---
+    st.markdown("### 💬 Ask a Question or Follow-up")
+    followup_input = st.text_input("Type your question here:", key="manual_followup_input")
 
-    ask_disabled = st.session_state.get("persisted_request_id") is not None
-    if st.button("Ask", key="ask_button", disabled=ask_disabled) or \
-       st.session_state.get("retry_requested") or \
-       st.session_state.get("auto_ask_followup"):
+    ask_clicked = st.button("Ask", disabled=st.session_state["is_loading"])
 
-        st.session_state.pop("auto_ask_followup", None)
-        st.session_state["retry_requested"] = False
-
-        if not question.strip():
+    if ask_clicked:
+        if not followup_input.strip():
             st.warning("Please enter a question.")
         else:
-            payload = {
-                "user_id": user_id,
-                "question": question,
-                "topic": topic,
-                "timestamp": datetime.now(timezone.utc).isoformat()
-            }
+            st.session_state["followup_question"] = followup_input.strip()
+            st.session_state["ask_now"] = True
+            st.session_state["is_loading"] = True  # 🔒 lock Ask button
+            st.rerun()
 
-            ask_status = None
-            ask_data = {}
-            raw_response = ""
-            answer_text = None
-            returned_request_id = None
+    # --- Trigger Ask logic if ask_now is True ---
+    if st.session_state.get("ask_now"):
+        st.session_state["ask_now"] = False
+        question = st.session_state["followup_question"]
+        st.session_state.pop("followup_question", None)
 
-            if not st.session_state.get("persisted_request_id"):
-                try:
-                    ask_response = requests.post(ASK_URL, json=payload)
-                    ask_status = ask_response.status_code
-                    ask_response.raise_for_status()
-                    ask_json = ask_response.json()
+        payload = {
+            "user_id": user_id,
+            "question": question,
+            "topic": topic,
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
 
-                    ask_data = ask_json.get("message", {})
-                    returned_request_id = ask_data.get("request_id")
+        ask_status = None
+        ask_data = {}
+        raw_response = ""
+        answer_text = None
+        returned_request_id = None
 
-                    if not returned_request_id:
-                        raise ValueError("❌ No request_id found in 'message' field.")
+        try:
+            ask_response = requests.post(ASK_URL, json=payload)
+            ask_status = ask_response.status_code
+            ask_response.raise_for_status()
+            ask_json = ask_response.json()
 
-                    st.session_state["persisted_request_id"] = returned_request_id
+            ask_data = ask_json.get("message", {})
+            returned_request_id = ask_data.get("request_id")
 
-                except requests.exceptions.RequestException as e:
-                    st.session_state.pop("persisted_request_id", None)
-                    st.error(f"❌ API error: {e}")
-                    with st.expander("📦 Debug Info"):
-                        st.markdown(f"**Submit Status Code:** `{ask_status}`")
-                        st.code(json.dumps(payload, indent=2), language="json")
-                        st.code(ask_response.text if 'ask_response' in locals() else str(e), language="json")
-                    st.stop()
-            else:
-                ask_data = {"request_id": st.session_state["persisted_request_id"]}
-                ask_status = "retried"
-                returned_request_id = st.session_state["persisted_request_id"]
+            if not returned_request_id:
+                raise ValueError("❌ No request_id found in 'message' field.")
 
-            st.info("⏳ Waiting for the system to generate an answer...")
+            st.session_state["persisted_request_id"] = returned_request_id
+
+        except requests.exceptions.RequestException as e:
+            st.session_state.pop("persisted_request_id", None)
+            st.session_state["is_loading"] = False  # 🔓 unlock Ask button
+            st.error(f"❌ API error: {e}")
+            st.stop()
+
+        # --- Wait for answer with spinner ---
+        with st.spinner("⏳ Generating answer, please wait..."):
             max_retries = 10
-
             for attempt in range(1, max_retries + 1):
-                with st.spinner(f"🔄 Attempt {attempt}/{max_retries}..."):
-                    time.sleep(2 * attempt)
-                    get_answer_url = f"{GET_ANSWER_URL}?request_id={returned_request_id}"
-                    try:
-                        answer_response = requests.get(get_answer_url)
-                        answer_status = answer_response.status_code
-                        answer_response.raise_for_status()
-                        answer_data = answer_response.json()
-                        answer_text = answer_data.get("answer", None)
-                        raw_response = json.dumps(answer_data, indent=2)
-                        if answer_text and answer_text != "_No answer returned._":
-                            break
-                    except Exception:
-                        raw_response = answer_response.text
-                        continue
+                time.sleep(2 * attempt)
+                get_answer_url = f"{GET_ANSWER_URL}?request_id={returned_request_id}"
+                try:
+                    answer_response = requests.get(get_answer_url)
+                    answer_status = answer_response.status_code
+                    answer_response.raise_for_status()
+                    answer_data = answer_response.json()
+                    answer_text = answer_data.get("answer", None)
+                    raw_response = json.dumps(answer_data, indent=2)
+                    if answer_text and answer_text != "_No answer returned._":
+                        break
+                except Exception:
+                    raw_response = answer_response.text
+                    continue
 
-            if answer_text:
-                st.success("✅ Answer")
-                st.markdown(answer_text)
-                st.session_state.pop("persisted_request_id", None)
+        if answer_text:
+            st.session_state.pop("persisted_request_id", None)
+            st.session_state["conversation"].append({
+                "question": question,
+                "answer": answer_text
+            })
+            st.session_state["is_loading"] = False  # 🔓 unlock Ask button
 
-                def extract_follow_ups(answer):
-                    match = re.search(r'{\s*"follow_up"\s*:\s*\[.*?\]\s*}', answer, re.DOTALL)
-                    if match:
-                        try:
-                            return json.loads(match.group(0)).get("follow_up", [])
-                        except:
-                            return []
+    # --- Show latest Q&A and follow-ups ---
+    if st.session_state.get("conversation"):
+        latest = st.session_state["conversation"][-1]
+        st.markdown("## ✅ Latest Answer")
+        st.markdown(f"**Q:** {latest['question']}")
+        st.markdown(f"**A:** {latest['answer']}")
+
+        def extract_follow_ups(answer):
+            match = re.search(r'{\s*"follow_up"\s*:\s*\[.*?\]\s*}', answer, re.DOTALL)
+            if match:
+                try:
+                    return json.loads(match.group(0)).get("follow_up", [])
+                except:
                     return []
+            return []
 
-                followup_options = extract_follow_ups(answer_text)
-                if followup_options:
-                    st.subheader("🔁 Follow-up Suggestions")
-                    selected_followup = st.radio("Choose a follow-up to ask:", followup_options, key="followup_choice")
-
-                    if st.button("🎯 Ask Follow-up Question"):
-                        st.session_state["followup_question"] = selected_followup
-                        st.session_state["followup_submitted"] = True
-                        st.session_state.pop("persisted_request_id", None)
-                        st.session_state["auto_ask_followup"] = True
-                        st.rerun()
-
-            else:
-                st.warning("⚠️ No answer returned after multiple attempts.")
-                if st.button("🔁 Retry to Get Answer", key="retry_button"):
-                    st.session_state["retry_requested"] = True
-                    st.experimental_rerun()
-
-            with st.expander("📦 View Request and Response"):
-                st.markdown(f"**Submit Status Code:** `{ask_status}`")
-                st.markdown(f"**Answer Status Code:** `{answer_status}`")
-                st.markdown(f"**Used request_id:** `{returned_request_id}`")
-                st.code(json.dumps(payload, indent=2), language="json")
-                st.code(json.dumps(ask_data, indent=2), language="json")
-                st.code(raw_response, language="json")
+        followups = extract_follow_ups(latest["answer"])
+        if followups:
+            st.markdown("### 🔁 Suggested Follow-up Questions:")
+            for fup in followups:
+                st.markdown(f"- {fup}")
