@@ -39,12 +39,12 @@ def lambda_handler(event, context):
             )
             items = response.get('Items', [])
 
-        if not items:
-            return {
-                'statusCode': 404,
-                'body': json.dumps({'error': f'No history found for user_id {user_id}'})
+            if not items:
+                return {
+                    'statusCode': 404,
+                    'body': json.dumps({'error': f'No history found for user_id {user_id}'})
                 }
-   
+
         return {
             'statusCode': 200,
             'body': json.dumps({'history': items}),

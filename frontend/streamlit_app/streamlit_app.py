@@ -136,3 +136,86 @@ with tab1:
             st.markdown("### 🔁 Suggested Follow-up Questions:")
             for fup in followups:
                 st.markdown(f"- {fup}")
+
+with tab2:
+    st.markdown("## 📜 My Question & Answer History")
+
+    st.markdown("Enter your student ID to view your past questions and answers.")
+    history_user_id = st.text_input("👤 Student ID", value="student001", key="history_user_id")
+
+    if st.button("🔍 Load History"):
+        with st.spinner("Fetching your history..."):
+            try:
+                response = requests.get(f"{HISTORY_URL}?user_id={history_user_id}")
+                response.raise_for_status()
+                history_data = response.json()
+                history_list = history_data.get("history", [])
+
+                if not history_list:
+                    st.info("📭 No Q&A history found for this student ID.")
+                else:
+                    st.success(f"✅ Found {len(history_list)} entries.")
+                    st.markdown("---")
+
+                    for idx, item in enumerate(reversed(history_list), 1):
+                        question = item.get("question", "No question provided.")
+                        answer = item.get("answer", "No answer available.")
+                        timestamp = item.get("timestamp", "No timestamp")
+
+                        # Format timestamp nicely
+                        try:
+                            dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                            timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+                        except Exception:
+                            timestamp_str = timestamp
+
+                        with st.expander(f"🔹 Q{idx}: {question[:80]}{'...' if len(question) > 80 else ''}"):
+                            st.markdown(f"**🕒 Asked on:** `{timestamp_str}`")
+                            st.markdown(f"**❓ Question:** {question}")
+                            st.markdown("---")
+                            st.markdown(f"**💡 Answer:**\n\n{answer}")
+
+            except requests.exceptions.RequestException as e:
+                st.error(f"❌ Could not load history: {e}")
+
+with tab3:
+    st.markdown("## 🛡️ Admin View - All Q&A Records")
+    admin_input = st.text_input("🔐 Enter admin passcode", type="password")
+    show_all = st.button("📂 Load All Q&A")
+
+    if show_all:
+        if admin_input != ADMIN_PASSCODE:
+            st.error("❌ Invalid passcode.")
+        else:
+            with st.spinner("Loading all Q&A history..."):
+                try:
+                    response = requests.get(f"{HISTORY_URL}?user_id=all")
+                    response.raise_for_status()
+                    data = response.json()
+                    all_records = data.get("history", data)  # fallback for list-style response
+
+                    if not all_records:
+                        st.info("📭 No records found.")
+                    else:
+                        st.success(f"✅ Loaded {len(all_records)} records.")
+                        st.markdown("---")
+
+                        for idx, item in enumerate(reversed(all_records), 1):
+                            user = item.get("user_id", "N/A")
+                            question = item.get("question", "N/A")
+                            answer = item.get("answer", "N/A")
+                            timestamp = item.get("timestamp", "N/A")
+
+                            try:
+                                dt = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+                                timestamp_str = dt.strftime("%Y-%m-%d %H:%M:%S UTC")
+                            except:
+                                timestamp_str = timestamp
+
+                            with st.expander(f"🧾 Entry {idx} | 👤 {user} | 🕒 {timestamp_str}"):
+                                st.markdown(f"**❓ Question:** {question}")
+                                st.markdown("---")
+                                st.markdown(f"**💡 Answer:**\n\n{answer}")
+
+                except requests.exceptions.RequestException as e:
+                    st.error(f"❌ Failed to fetch data: {e}")

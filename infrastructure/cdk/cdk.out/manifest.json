@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-deploy-role-628902727523-ap-northeast-1",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-cfn-exec-role-628902727523-ap-northeast-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-628902727523-ap-northeast-1/8079406f6d26b9097aede16cdd8ddfd71253231a9b6dcafce66a48a811129711.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-628902727523-ap-northeast-1/23f90b8dcb96af108fae3f4b05ab001300f28fc5de5f0295da4f9fda05884996.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -163,7 +163,7 @@
         "/MultiAgentStack/RAGMultiAgentAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RAGMultiAgentAPIDeployment292FFC9A8ef980ba73890f1438de5fd64835bc60"
+            "data": "RAGMultiAgentAPIDeployment292FFC9A5ce459e56aebaa38adcc8686ab31f495"
           }
         ],
         "/MultiAgentStack/RAGMultiAgentAPI/DeploymentStage.prod/Resource": [
@@ -236,6 +236,36 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "RAGMultiAgentAPIgetanswerOPTIONSEE6DE109"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-history/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgethistory49798F53"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-history/GET/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-history": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgethistoryGETApiPermissionMultiAgentStackRAGMultiAgentAPI9107A53BGETgethistoryD4354695"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-history/GET/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-history": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgethistoryGETApiPermissionTestMultiAgentStackRAGMultiAgentAPI9107A53BGETgethistory61D76101"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-history/GET/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgethistoryGET07C28E96"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-history/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgethistoryOPTIONSDC785766"
           }
         ],
         "/MultiAgentStack/DLQAlarm/Resource": [

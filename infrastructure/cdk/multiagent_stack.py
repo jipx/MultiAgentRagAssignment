@@ -137,6 +137,15 @@ class MultiAgentStack(Stack):
             allow_methods=["GET"]
         )
 
+                # --- GET /get-history ---
+        get_history_resource = api.root.add_resource("get-history")
+        get_history_resource.add_method("GET", apigateway.LambdaIntegration(get_history_lambda))
+        get_history_resource.add_cors_preflight(
+            allow_origins=apigateway.Cors.ALL_ORIGINS,
+            allow_methods=["GET"]
+        )
+
+
         cw.Alarm(
             self, "DLQAlarm",
             metric=dead_letter_queue.metric_approximate_number_of_messages_visible(),
