@@ -31,8 +31,8 @@ def is_owasp_related(question: str) -> bool:
 def expand_if_vague(question: str) -> str:
     """Add clarification to vague inputs."""
     tokens = question.lower().strip().split()
-    if len(tokens) <= 100 and not any(char in question for char in "?."):
-        return f"can you tell me  about : '{question}'?"
+    if len(tokens) <= 4 and not any(char in question for char in "?."):
+        return f"The student asks: '{question}'. Can you clarify what the student might be referring to?"
     return question
 
 def handle_assignment_question(question: str) -> str:
