@@ -20,9 +20,20 @@ tab1, tab2, tab3 = st.tabs(["🔍 Ask a Question", "📜 View My History", "🛡
 # --- TAB 1: Ask a Question ---
 with tab1:
     
-    # --- Top inputs ---
+      # --- Top inputs ---
     user_id = st.text_input("👤 Student ID", value="student001", max_chars=10)
-    topic = st.selectbox("📚 Choose a topic", ["assignment", "owasp", "assignment+owasp"])
+    topic = st.selectbox("📚 Choose a topic", ["assignment", "owasp", "cloudops", "assignment+owasp"])
+
+    # --- Example guidance ---
+    if topic == "cloudops":
+        st.info("Example: How can I monitor EC2 memory usage using CloudWatch?")
+    elif topic == "assignment":
+        st.info("Example: What is the expected output of Assignment ?")
+    elif topic == "owasp":
+        st.info("Example: What is an example of SQL injection in login forms?")
+    elif topic == "assignment+owasp":
+        st.info("Example: Explain how assignment is related to OWASP Top 10 issues.")
+
 
     # --- Init session state ---
     if "conversation" not in st.session_state:

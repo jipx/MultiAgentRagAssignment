@@ -11,21 +11,21 @@
     },
     "MultiAgentStack": {
       "type": "aws:cloudformation:stack",
-      "environment": "aws://628902727523/ap-northeast-1",
+      "environment": "aws://unknown-account/unknown-region",
       "properties": {
         "templateFile": "MultiAgentStack.template.json",
         "terminationProtection": false,
         "validateOnSynth": false,
-        "assumeRoleArn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-deploy-role-628902727523-ap-northeast-1",
-        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-cfn-exec-role-628902727523-ap-northeast-1",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-628902727523-ap-northeast-1/23f90b8dcb96af108fae3f4b05ab001300f28fc5de5f0295da4f9fda05884996.json",
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/a9f89fb2dc4eec0bce2e9bc979e02a0a36a3c79507ba82128b95b8281cc8055e.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
           "MultiAgentStack.assets"
         ],
         "lookupRole": {
-          "arn": "arn:${AWS::Partition}:iam::628902727523:role/cdk-hnb659fds-lookup-role-628902727523-ap-northeast-1",
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
           "requiresBootstrapStackVersion": 8,
           "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
         }
@@ -163,7 +163,7 @@
         "/MultiAgentStack/RAGMultiAgentAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RAGMultiAgentAPIDeployment292FFC9A5ce459e56aebaa38adcc8686ab31f495"
+            "data": "RAGMultiAgentAPIDeployment292FFC9A7c7662a80c49eab3594dc268725203f3"
           }
         ],
         "/MultiAgentStack/RAGMultiAgentAPI/DeploymentStage.prod/Resource": [
@@ -274,10 +274,88 @@
             "data": "DLQAlarm77626DBA"
           }
         ],
+        "/MultiAgentStack/SubmitLambdaName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "SubmitLambdaName"
+          }
+        ],
+        "/MultiAgentStack/WorkerLambdaName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "WorkerLambdaName"
+          }
+        ],
+        "/MultiAgentStack/GetAnswerLambdaName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetAnswerLambdaName"
+          }
+        ],
+        "/MultiAgentStack/GetHistoryLambdaName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "GetHistoryLambdaName"
+          }
+        ],
+        "/MultiAgentStack/ApiBaseUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ApiBaseUrl"
+          }
+        ],
+        "/MultiAgentStack/RagQueueUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RagQueueUrl"
+          }
+        ],
+        "/MultiAgentStack/DLQUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DLQUrl"
+          }
+        ],
+        "/MultiAgentStack/ResponseTableName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ResponseTableName"
+          }
+        ],
         "/MultiAgentStack/CDKMetadata/Default": [
           {
             "type": "aws:cdk:logicalId",
             "data": "CDKMetadata"
+          }
+        ],
+        "/MultiAgentStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/MultiAgentStack/Exports/Output{\"Ref\":\"WorkerLambdaBD11C0E2\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefWorkerLambdaBD11C0E2596AD6C6"
+          }
+        ],
+        "/MultiAgentStack/Exports/Output{\"Ref\":\"SubmitLambda8054545E\"}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputRefSubmitLambda8054545E5BCCAFFD"
+          }
+        ],
+        "/MultiAgentStack/Exports/Output{\"Fn::GetAtt\":[\"RAGQueryQueueE7AA1C2D\",\"QueueName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttRAGQueryQueueE7AA1C2DQueueNameC2CC6DFE"
+          }
+        ],
+        "/MultiAgentStack/Exports/Output{\"Fn::GetAtt\":[\"RAGDLQDCE342F2\",\"QueueName\"]}": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "ExportsOutputFnGetAttRAGDLQDCE342F2QueueName8F3BB285"
           }
         ],
         "/MultiAgentStack/BootstrapVersion": [
@@ -294,6 +372,79 @@
         ]
       },
       "displayName": "MultiAgentStack"
+    },
+    "MonitoringDashboardStack.assets": {
+      "type": "cdk:asset-manifest",
+      "properties": {
+        "file": "MonitoringDashboardStack.assets.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+      }
+    },
+    "MonitoringDashboardStack": {
+      "type": "aws:cloudformation:stack",
+      "environment": "aws://unknown-account/unknown-region",
+      "properties": {
+        "templateFile": "MonitoringDashboardStack.template.json",
+        "terminationProtection": false,
+        "validateOnSynth": false,
+        "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
+        "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/1206c8e957bd563cc4987a6c1d250b57cd31a81bc5eaf3ad75e112b93e0e5843.json",
+        "requiresBootstrapStackVersion": 6,
+        "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
+        "additionalDependencies": [
+          "MonitoringDashboardStack.assets"
+        ],
+        "lookupRole": {
+          "arn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-lookup-role-${AWS::AccountId}-${AWS::Region}",
+          "requiresBootstrapStackVersion": 8,
+          "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version"
+        }
+      },
+      "dependencies": [
+        "MultiAgentStack",
+        "MonitoringDashboardStack.assets"
+      ],
+      "metadata": {
+        "/MonitoringDashboardStack/Dashboard/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "Dashboard9E4231ED"
+          }
+        ],
+        "/MonitoringDashboardStack/DLQAlarm/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "DLQAlarm77626DBA"
+          }
+        ],
+        "/MonitoringDashboardStack/CDKMetadata/Default": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadata"
+          }
+        ],
+        "/MonitoringDashboardStack/CDKMetadata/Condition": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CDKMetadataAvailable"
+          }
+        ],
+        "/MonitoringDashboardStack/BootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "BootstrapVersion"
+          }
+        ],
+        "/MonitoringDashboardStack/CheckBootstrapVersion": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CheckBootstrapVersion"
+          }
+        ]
+      },
+      "displayName": "MonitoringDashboardStack"
     },
     "Tree": {
       "type": "cdk:tree",
