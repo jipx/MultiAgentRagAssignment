@@ -261,7 +261,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "d6f8aff46aec3e7b50c3d09268a24e3e3dd40adfc9eaa972fdeb565739d8f4dc.zip"
+     "S3Key": "3a59bb3586d18a70599aa0f3bdeb68de734b20a0a514cebbaa52e636d069820c.zip"
     },
     "Environment": {
      "Variables": {
@@ -290,7 +290,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MultiAgentStack/WorkerLambda/Resource",
-    "aws:asset:path": "asset.d6f8aff46aec3e7b50c3d09268a24e3e3dd40adfc9eaa972fdeb565739d8f4dc",
+    "aws:asset:path": "asset.3a59bb3586d18a70599aa0f3bdeb68de734b20a0a514cebbaa52e636d069820c",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }

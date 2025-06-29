@@ -5,7 +5,7 @@ import logging
 
 
 model_id = os.environ["MODEL_ID"]
-kb_id = os.environ.get("CLOUDOPS_KB_ID","A3SDSQCK4G")  # fallback
+kb_id = os.environ.get("CLOUDOPS_KB_ID", os.environ["KB_ID"])  # fallback
 region = os.environ.get("AWS_REGION", "ap-northeast-1")
 
 
@@ -16,7 +16,7 @@ logger.setLevel(logging.INFO)
 # Bedrock runtime client
 bedrock_runtime = boto3.client("bedrock-agent-runtime", region_name=region)
 
-def handle_cloudops_question(question: str, prompt: str = None) -> str:
+def answer_cloudops(question: str, prompt: str = None) -> str:
     """
     Uses Amazon Bedrock RetrieveAndGenerate to answer cloud operations questions
     with knowledge base context and optional prompt prefix.

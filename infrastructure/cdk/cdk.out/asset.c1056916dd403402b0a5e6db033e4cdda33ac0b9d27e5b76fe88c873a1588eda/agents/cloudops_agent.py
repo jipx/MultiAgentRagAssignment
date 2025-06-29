@@ -5,7 +5,7 @@ import logging
 
 
 model_id = os.environ["MODEL_ID"]
-kb_id = os.environ.get("CLOUDOPS_KB_ID","A3SDSQCK4G")  # fallback
+kb_id = os.environ.get("CLOUDOPS_KB_ID")  # fallback
 region = os.environ.get("AWS_REGION", "ap-northeast-1")
 
 
