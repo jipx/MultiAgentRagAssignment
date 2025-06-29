@@ -4,5 +4,6 @@
   "model_name": "Claude",
   "model_id": "anthropic.claude-3-5-sonnet-20240620-v1:0",
   "kb_id": "TTM1S81PC3",
+  "CLOUDOPS_KB_ID": "A3SDSQCK4G", 
   "rag_endpoint_url": "https://bedrock-runtime.ap-southeast-1.amazonaws.com"
 }

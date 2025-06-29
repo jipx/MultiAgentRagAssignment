@@ -5,6 +5,21 @@ import time
 import re
 from datetime import datetime, timezone
 
+import socket
+
+def is_connected(host="8.8.8.8", port=53, timeout=3):
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except socket.error:
+        return False
+
+if not is_connected():
+    st.error("🚫 No internet connection. Please check your network and try again.")
+    st.stop()
+
+
 # --- API and Secrets ---
 ASK_URL = st.secrets["api"]["ask_url"]
 GET_ANSWER_URL = st.secrets["api"]["get_answer_url"]
