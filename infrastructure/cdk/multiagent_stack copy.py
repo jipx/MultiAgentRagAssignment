@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from aws_cdk import (
     Stack,
@@ -10,7 +9,6 @@ from aws_cdk import (
     aws_dynamodb as dynamodb,
     aws_cloudwatch as cw,
     aws_logs as logs,
-    aws_s3 as s3,
     CfnOutput,
     Duration,
 )
@@ -25,7 +23,6 @@ class MultiAgentStack(Stack):
         model_id = self.node.try_get_context("model_id") or "anthropic.claude-v2"
         kb_id = self.node.try_get_context("kb_id") or "owasp-kb-001"
         rag_endpoint = self.node.try_get_context("rag_endpoint_url") or "https://bedrock-runtime.ap-southeast-1.amazonaws.com"
-        kb_bucket_name = self.node.try_get_context("kb_bucket_name")
 
         self.dead_letter_queue = sqs.Queue(
             self, "RAGDLQ",
@@ -97,18 +94,6 @@ class MultiAgentStack(Stack):
         )
         self.response_table.grant_read_data(self.get_history_lambda)
 
-        # 📦 Presigned URL Lambda + S3
-        bucket = s3.Bucket.from_bucket_name(self, "KnowledgeBaseBucket", kb_bucket_name)
-
-        self.presign_lambda = _lambda.Function(
-            self, "PresignedURLFunction",
-            runtime=_lambda.Runtime.PYTHON_3_11,
-            handler="lambda_function.handler",
-            code=_lambda.Code.from_asset(str(Path(__file__).resolve().parents[2] / "backend" / "lambda_presigned_url")),
-            environment={"BUCKET_NAME": bucket.bucket_name}
-        )
-        bucket.grant_read_write(self.presign_lambda)
-
         self.log_group = logs.LogGroup(self, "ApiGatewayAccessLogs")
         self.api_role = iam.Role(
             self, "ApiGatewayCloudWatchRole",
@@ -139,24 +124,27 @@ class MultiAgentStack(Stack):
             )
         )
 
-        # API Resources
         ask_resource = self.api.root.add_resource("ask")
         ask_resource.add_method("POST", apigateway.LambdaIntegration(self.submit_lambda))
-        ask_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["POST"])
+        ask_resource.add_cors_preflight(
+            allow_origins=apigateway.Cors.ALL_ORIGINS,
+            allow_methods=["POST"]
+        )
 
         get_answer_resource = self.api.root.add_resource("get-answer")
         get_answer_resource.add_method("GET", apigateway.LambdaIntegration(self.get_answer_lambda))
-        get_answer_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["GET"])
+        get_answer_resource.add_cors_preflight(
+            allow_origins=apigateway.Cors.ALL_ORIGINS,
+            allow_methods=["GET"]
+        )
 
         get_history_resource = self.api.root.add_resource("get-history")
         get_history_resource.add_method("GET", apigateway.LambdaIntegration(self.get_history_lambda))
-        get_history_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["GET"])
+        get_history_resource.add_cors_preflight(
+            allow_origins=apigateway.Cors.ALL_ORIGINS,
+            allow_methods=["GET"]
+        )
 
-        presigned_url_resource = self.api.root.add_resource("presigned-url")
-        presigned_url_resource.add_method("POST", apigateway.LambdaIntegration(self.presign_lambda))
-        presigned_url_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["POST"])
-
-        # Alarm
         cw.Alarm(
             self, "DLQAlarm",
             metric=self.dead_letter_queue.metric_approximate_number_of_messages_visible(),
@@ -167,7 +155,6 @@ class MultiAgentStack(Stack):
         )
 
         # Outputs
-        presigned_url_api_path = self.api.url + "presigned-url"
         CfnOutput(self, "SubmitLambdaName", value=self.submit_lambda.function_name, export_name="SubmitLambdaName")
         CfnOutput(self, "WorkerLambdaName", value=self.worker_lambda.function_name, export_name="WorkerLambdaName")
         CfnOutput(self, "GetAnswerLambdaName", value=self.get_answer_lambda.function_name, export_name="GetAnswerLambdaName")
@@ -176,5 +163,3 @@ class MultiAgentStack(Stack):
         CfnOutput(self, "RagQueueUrl", value=self.rag_queue.queue_url, export_name="RagQueueUrl")
         CfnOutput(self, "DLQUrl", value=self.dead_letter_queue.queue_url, export_name="DLQUrl")
         CfnOutput(self, "ResponseTableName", value=self.response_table.table_name, export_name="ResponseTableName")
-        CfnOutput(self, "PresignLambdaName", value=self.presign_lambda.function_name, export_name="PresignLambdaName")
-        CfnOutput(self, "PresignApiUrl", value=presigned_url_api_path, export_name="PresignApiUrl")

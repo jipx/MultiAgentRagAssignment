@@ -53,7 +53,20 @@
         }
       }
     },
-    "e458a78f72e38535a89edad3b510493549e4b6be5e880436ec5f27b212c3e6d2": {
+    "c6681cd496428d185bae5e14cd0e579c996a943d3dc2f601810c158632ac8c4d": {
+      "source": {
+        "path": "asset.c6681cd496428d185bae5e14cd0e579c996a943d3dc2f601810c158632ac8c4d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "current_account-current_region": {
+          "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
+          "objectKey": "c6681cd496428d185bae5e14cd0e579c996a943d3dc2f601810c158632ac8c4d.zip",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
+        }
+      }
+    },
+    "1b01f3f39966164630f64a869aadc0fa346f424075409066c84e321db273c067": {
       "source": {
         "path": "MultiAgentStack.template.json",
         "packaging": "file"
@@ -61,7 +74,7 @@
       "destinations": {
         "current_account-current_region": {
           "bucketName": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}",
-          "objectKey": "e458a78f72e38535a89edad3b510493549e4b6be5e880436ec5f27b212c3e6d2.json",
+          "objectKey": "1b01f3f39966164630f64a869aadc0fa346f424075409066c84e321db273c067.json",
           "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-file-publishing-role-${AWS::AccountId}-${AWS::Region}"
         }
       }
