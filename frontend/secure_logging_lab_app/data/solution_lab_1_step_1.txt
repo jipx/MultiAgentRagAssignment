@@ -1,0 +1,58 @@
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+var user = require('../model/user.js');
+var cors = require('cors');
+var validator = require('validator');
+var fs = require('fs');
+var path = require('path');
+var morgan = require('morgan');
+var rfs = require('rotating-file-stream');
+
+app.options('*', cors());
+app.use(cors());
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+app.use(bodyParser.json());
+app.use(urlencodedParser);
+
+// Setup rotating log stream
+const logDirectory = path.join(__dirname, '..', 'log');
+if (!fs.existsSync(logDirectory)) {
+    fs.mkdirSync(logDirectory);
+}
+const accessLogStream = rfs.createStream('log.txt', {
+    interval: '12h',
+    path: logDirectory,
+});
+
+// Custom token for exceptions
+morgan.token('exception', (req, res) => res.locals.errorMessage || '-');
+
+// JSON log format
+morgan.format('jsonFormat', (tokens, req, res) => {
+    return JSON.stringify({
+        exception: tokens.exception(req, res),
+        method: req.method,
+        url: req.originalUrl,
+        ip: req.ip,
+        date: new Date().toUTCString()
+    });
+});
+
+// Apply logger middleware
+app.use(morgan('jsonFormat', { stream: accessLogStream }));
+app.use(morgan('jsonFormat')); // Also print to console
+
+app.get('/user/:userid', function (req, res) {
+    var id = req.params.userid;
+
+    user.getUser(id, function (err, result) {
+        if (!err) {
+            res.send(result);
+        } else {
+            res.locals.errorMessage = err.toString(); // store error
+            res.status(500).send("Some error");
+        }
+    });
+});
