@@ -37,7 +37,8 @@ st.markdown(dark_css if st.session_state.theme == 'dark' else light_css, unsafe_
 
 # --- Helper Functions ---
 def get_filename(prefix, lab, step, ext):
-    base_dir = os.path.join(os.getcwd(), "data")
+    base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
+
     os.makedirs(base_dir, exist_ok=True)
     filename = f"{prefix}_{lab.lower().replace(' ', '_')}_{step.lower().replace(' ', '_')}.{ext}"
     return os.path.join(base_dir, filename)
