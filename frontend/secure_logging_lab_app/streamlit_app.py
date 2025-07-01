@@ -164,8 +164,10 @@ if page == "Lab Tabs":
         else:
             st.info("No quiz questions found.")
 
+    
     with tabs[3]:
         st.header("🔍 Code Difference (Unified View)")
+
         solution_file = get_filename("solution", lab_choice, step_choice, "txt")
         original_file = get_filename("original", lab_choice, step_choice, "txt")
         solution = load_file_content(solution_file, "Solution not available.").splitlines()
@@ -178,7 +180,7 @@ if page == "Lab Tabs":
             tofile="Solution Code",
             lineterm=""
         )
-        diff_text = "\n".join(diff_lines)  # ✅ FIXED
+        diff_text = "".join(diff_lines)
 
         if diff_text.strip():
             st.code(diff_text, language="diff")
@@ -195,9 +197,7 @@ if page == "Lab Tabs":
         else:
             st.success("✅ No differences found between original and solution.")
 
-        
-  
-    with tabs[4]:
+        with tabs[4]:
         st.header("Lab Score")
         if 'score' in st.session_state and 'answered' in st.session_state:
             total = len(st.session_state.answered)
