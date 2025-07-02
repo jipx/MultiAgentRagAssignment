@@ -14,11 +14,6 @@ def init_uploaded_from_data_folder():
     base_path = "data"
     lab_keys = ["labnotes", "quiz", "solution", "original"]
     uploaded = {}
-
-    if not os.path.exists(base_path):
-        os.makedirs(base_path)
-        return {key: None for key in lab_keys}
-
     for key in lab_keys:
         for filename in os.listdir(base_path):
             if filename.startswith(key):
