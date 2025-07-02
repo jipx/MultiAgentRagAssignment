@@ -256,7 +256,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "fe3e37d72f789382bf4cd63381045e4c173640253b190823c33e3b98df32ec9e.zip"
+                      "s3Key": "edc4dce6876bab778cdd27ac816809f9ac188d2350eef5f75d42471d2f78e9b4.zip"
                     },
                     "environment": {
                       "variables": {
@@ -459,7 +459,7 @@
                       "s3Bucket": {
                         "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
                       },
-                      "s3Key": "3a59bb3586d18a70599aa0f3bdeb68de734b20a0a514cebbaa52e636d069820c.zip"
+                      "s3Key": "772a46abeb7fe9ecadafc8d51d5549b3c33d067716fc5bf8fdad4d27854fdda2.zip"
                     },
                     "environment": {
                       "variables": {
@@ -1327,7 +1327,7 @@
                           "format": "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"caller\":\"$context.identity.caller\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
                         },
                         "deploymentId": {
-                          "Ref": "RAGMultiAgentAPIDeployment292FFC9Af6980e7af8fa59afebda0284ceedd81d"
+                          "Ref": "RAGMultiAgentAPIDeployment292FFC9A9c763766b02675fb496d8b317a54d4c7"
                         },
                         "methodSettings": [
                           {
@@ -1638,13 +1638,13 @@
                           "version": "2.128.0"
                         }
                       },
-                      "GET": {
-                        "id": "GET",
-                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET",
+                      "POST": {
+                        "id": "POST",
+                        "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/POST",
                         "children": {
-                          "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer": {
-                            "id": "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
-                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
+                          "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer": {
+                            "id": "ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/POST/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                               "aws:cdk:cloudformation:props": {
@@ -1680,7 +1680,7 @@
                                       {
                                         "Ref": "RAGMultiAgentAPIDeploymentStageprodB82550D9"
                                       },
-                                      "/GET/get-answer"
+                                      "/POST/get-answer"
                                     ]
                                   ]
                                 }
@@ -1691,9 +1691,9 @@
                               "version": "2.128.0"
                             }
                           },
-                          "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer": {
-                            "id": "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
-                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer",
+                          "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer": {
+                            "id": "ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/POST/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::Lambda::Permission",
                               "aws:cdk:cloudformation:props": {
@@ -1725,7 +1725,7 @@
                                       {
                                         "Ref": "RAGMultiAgentAPIB3A8E7C6"
                                       },
-                                      "/test-invoke-stage/GET/get-answer"
+                                      "/test-invoke-stage/POST/get-answer"
                                     ]
                                   ]
                                 }
@@ -1738,12 +1738,12 @@
                           },
                           "Resource": {
                             "id": "Resource",
-                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/Resource",
+                            "path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/POST/Resource",
                             "attributes": {
                               "aws:cdk:cloudformation:type": "AWS::ApiGateway::Method",
                               "aws:cdk:cloudformation:props": {
                                 "authorizationType": "NONE",
-                                "httpMethod": "GET",
+                                "httpMethod": "POST",
                                 "integration": {
                                   "type": "AWS_PROXY",
                                   "uri": {
@@ -1814,7 +1814,7 @@
                                       "responseParameters": {
                                         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
                                         "method.response.header.Access-Control-Allow-Origin": "'*'",
-                                        "method.response.header.Access-Control-Allow-Methods": "'GET'"
+                                        "method.response.header.Access-Control-Allow-Methods": "'POST'"
                                       }
                                     }
                                   ]

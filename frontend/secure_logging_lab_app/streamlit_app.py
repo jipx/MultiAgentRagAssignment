@@ -38,7 +38,6 @@ st.markdown(dark_css if st.session_state.theme == 'dark' else light_css, unsafe_
 # --- Helper Functions ---
 def get_filename(prefix, lab, step, ext):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
-
     os.makedirs(base_dir, exist_ok=True)
     filename = f"{prefix}_{lab.lower().replace(' ', '_')}_{step.lower().replace(' ', '_')}.{ext}"
     return os.path.join(base_dir, filename)
@@ -101,7 +100,6 @@ if page == "Lab Tabs":
 
     with tabs[2]:
         st.header("🧠 Quiz")
-
         quiz_file = get_filename("quiz", lab_choice, step_choice, "json")
         quiz_data = load_quiz_data(quiz_file)
         questions = quiz_data.get("questions", [])
@@ -156,7 +154,6 @@ if page == "Lab Tabs":
 
     with tabs[3]:
         st.header("🔍 Code Difference (Unified View)")
-
         solution_file = get_filename("solution", lab_choice, step_choice, "txt")
         original_file = get_filename("original", lab_choice, step_choice, "txt")
         solution = load_file_content(solution_file, "Solution not available.").splitlines()
@@ -173,11 +170,10 @@ if page == "Lab Tabs":
 
         if diff_text.strip():
             st.code(diff_text, language="diff")
-
             st.subheader("💬 Reviewer Comment")
             user_comment = st.text_area("Leave your feedback:", height=150)
 
-            if st.button("💾 Save Comment"):
+            if st.button("📅 Save Comment"):
                 comments_dir = os.path.join(os.getcwd(), 'comments')
                 os.makedirs(comments_dir, exist_ok=True)
                 comment_path = os.path.join(
@@ -200,4 +196,34 @@ if page == "Lab Tabs":
         else:
             st.info("Score will appear after quiz interaction.")
 
-# The rest (Student Upload and Lecturer View) continues unchanged.
+elif page == "Student Upload":
+    st.header("📚 Student Upload")
+    st.write("Students can upload their solution files here for review.")
+    student_file = st.file_uploader("Upload your solution (TXT)", type="txt", key="student_upload")
+    if student_file:
+        st.success("📄 Solution uploaded successfully.")
+        content = student_file.read().decode("utf-8")
+        st.text_area("Uploaded Content Preview:", content, height=300)
+
+elif page == "Lecturer View":
+    st.header("👩‍🏫 Lecturer View")
+    st.write("View uploaded lab files and comments.")
+
+    data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
+    comment_dir = os.path.join(os.getcwd(), "comments")
+
+    st.subheader("Lab Files")
+    for fname in sorted(os.listdir(data_dir)):
+        if fname.endswith(".txt") or fname.endswith(".json"):
+            with open(os.path.join(data_dir, fname), encoding="utf-8", errors="ignore") as f:
+                st.markdown(f"**{fname}**")
+                st.code(f.read())
+
+    st.subheader("Reviewer Comments")
+    if os.path.exists(comment_dir):
+        for cfile in sorted(os.listdir(comment_dir)):
+            with open(os.path.join(comment_dir, cfile), encoding="utf-8") as f:
+                st.markdown(f"**{cfile}**")
+                st.text_area("Comment", f.read(), height=100)
+    else:
+        st.info("No comments available yet.")

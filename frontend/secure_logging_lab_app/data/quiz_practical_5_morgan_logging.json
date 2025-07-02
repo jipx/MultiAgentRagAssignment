@@ -1,0 +1,114 @@
+{
+  "questions": [
+    {
+      "question": "Which middleware is primarily used for logging in this lab?",
+      "choices": [
+        "Morgan",
+        "Winston",
+        "Log4js",
+        "Bunyan"
+      ],
+      "answer": "Morgan",
+      "explanation": "Morgan is used for logging HTTP requests in Express.js."
+    },
+    {
+      "question": "Which package is used to support log file rotation?",
+      "choices": [
+        "log-rotate",
+        "rotating-log-stream",
+        "rotating-file-stream",
+        "log4js"
+      ],
+      "answer": "rotating-file-stream",
+      "explanation": "The rotating-file-stream package enables log file rotation."
+    },
+    {
+      "question": "What is the purpose of the custom token 'exception'?",
+      "choices": [
+        "To track routes",
+        "To log IP addresses",
+        "To log exception messages",
+        "To mask passwords"
+      ],
+      "answer": "To log exception messages",
+      "explanation": "It captures errors stored in res.locals.errorMessage."
+    },
+    {
+      "question": "Where is the log directory created?",
+      "choices": [
+        "logdir/",
+        "log/",
+        "logs/",
+        "temp/logs/"
+      ],
+      "answer": "log/",
+      "explanation": "Logs are stored in a directory named 'log' using path.join."
+    },
+    {
+      "question": "Which HTTP method and URL are included in the JSON log format?",
+      "choices": [
+        "Only URL",
+        "Only Method",
+        "Both Method and URL",
+        "Neither"
+      ],
+      "answer": "Both Method and URL",
+      "explanation": "The custom JSON format includes method, url, ip, and date."
+    },
+    {
+      "question": "What happens if rotating-file-stream is not installed?",
+      "choices": [
+        "Logs are sent to the database",
+        "No logs are generated",
+        "App crashes on startup",
+        "Console logging still works"
+      ],
+      "answer": "App crashes on startup",
+      "explanation": "The app will crash if required modules like rotating-file-stream are missing."
+    },
+    {
+      "question": "What should you modify to simulate an error in the system?",
+      "choices": [
+        "Change the port number",
+        "Set an invalid database user",
+        "Remove Morgan middleware",
+        "Disable body parser"
+      ],
+      "answer": "Set an invalid database user",
+      "explanation": "Changing DB credentials like user: 'root12' causes access errors to test exception logging."
+    },
+    {
+      "question": "How often is the rotating log stream set to rotate?",
+      "choices": [
+        "Every hour",
+        "Daily",
+        "Every 12 hours",
+        "Weekly"
+      ],
+      "answer": "Every 12 hours",
+      "explanation": "The interval is set to '12h' for rotating logs."
+    },
+    {
+      "question": "Which function is used to define a custom format in Morgan?",
+      "choices": [
+        "morgan.create()",
+        "morgan.format()",
+        "morgan.token()",
+        "morgan.custom()"
+      ],
+      "answer": "morgan.format()",
+      "explanation": "morgan.format() is used to create named formats like 'jsonFormat'."
+    },
+    {
+      "question": "Where should morgan('jsonFormat') be placed in the middleware order?",
+      "choices": [
+        "After all routes",
+        "Before error handler",
+        "Before routes and after body parser",
+        "At the very end"
+      ],
+      "answer": "Before routes and after body parser",
+      "explanation": "Logging middleware should be registered before routes to capture all requests."
+    }
+  ]
+}

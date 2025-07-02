@@ -1,4 +1,3 @@
-
 from pathlib import Path
 from aws_cdk import (
     Stack,
@@ -15,7 +14,6 @@ from aws_cdk import (
     Duration,
 )
 from constructs import Construct
-
 
 class MultiAgentStack(Stack):
     def __init__(self, scope: Construct, id: str, **kwargs):
@@ -145,8 +143,8 @@ class MultiAgentStack(Stack):
         ask_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["POST"])
 
         get_answer_resource = self.api.root.add_resource("get-answer")
-        get_answer_resource.add_method("GET", apigateway.LambdaIntegration(self.get_answer_lambda))
-        get_answer_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["GET"])
+        get_answer_resource.add_method("POST", apigateway.LambdaIntegration(self.get_answer_lambda))
+        get_answer_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["POST"])
 
         get_history_resource = self.api.root.add_resource("get-history")
         get_history_resource.add_method("GET", apigateway.LambdaIntegration(self.get_history_lambda))
@@ -167,7 +165,6 @@ class MultiAgentStack(Stack):
         )
 
         # Outputs
-        presigned_url_api_path = self.api.url + "presigned-url"
         CfnOutput(self, "SubmitLambdaName", value=self.submit_lambda.function_name, export_name="SubmitLambdaName")
         CfnOutput(self, "WorkerLambdaName", value=self.worker_lambda.function_name, export_name="WorkerLambdaName")
         CfnOutput(self, "GetAnswerLambdaName", value=self.get_answer_lambda.function_name, export_name="GetAnswerLambdaName")
@@ -177,4 +174,4 @@ class MultiAgentStack(Stack):
         CfnOutput(self, "DLQUrl", value=self.dead_letter_queue.queue_url, export_name="DLQUrl")
         CfnOutput(self, "ResponseTableName", value=self.response_table.table_name, export_name="ResponseTableName")
         CfnOutput(self, "PresignLambdaName", value=self.presign_lambda.function_name, export_name="PresignLambdaName")
-        CfnOutput(self, "PresignApiUrl", value=presigned_url_api_path, export_name="PresignApiUrl")
+        CfnOutput(self, "PresignApiUrl", value=self.api.url + "presigned-url", export_name="PresignApiUrl")

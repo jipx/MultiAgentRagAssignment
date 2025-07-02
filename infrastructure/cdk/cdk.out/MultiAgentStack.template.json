@@ -130,7 +130,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "fe3e37d72f789382bf4cd63381045e4c173640253b190823c33e3b98df32ec9e.zip"
+     "S3Key": "edc4dce6876bab778cdd27ac816809f9ac188d2350eef5f75d42471d2f78e9b4.zip"
     },
     "Environment": {
      "Variables": {
@@ -154,7 +154,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MultiAgentStack/SubmitLambda/Resource",
-    "aws:asset:path": "asset.fe3e37d72f789382bf4cd63381045e4c173640253b190823c33e3b98df32ec9e",
+    "aws:asset:path": "asset.edc4dce6876bab778cdd27ac816809f9ac188d2350eef5f75d42471d2f78e9b4",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -261,7 +261,7 @@
      "S3Bucket": {
       "Fn::Sub": "cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}"
      },
-     "S3Key": "3a59bb3586d18a70599aa0f3bdeb68de734b20a0a514cebbaa52e636d069820c.zip"
+     "S3Key": "772a46abeb7fe9ecadafc8d51d5549b3c33d067716fc5bf8fdad4d27854fdda2.zip"
     },
     "Environment": {
      "Variables": {
@@ -290,7 +290,7 @@
    ],
    "Metadata": {
     "aws:cdk:path": "MultiAgentStack/WorkerLambda/Resource",
-    "aws:asset:path": "asset.3a59bb3586d18a70599aa0f3bdeb68de734b20a0a514cebbaa52e636d069820c",
+    "aws:asset:path": "asset.772a46abeb7fe9ecadafc8d51d5549b3c33d067716fc5bf8fdad4d27854fdda2",
     "aws:asset:is-bundled": false,
     "aws:asset:property": "Code"
    }
@@ -776,7 +776,7 @@
     "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Account"
    }
   },
-  "RAGMultiAgentAPIDeployment292FFC9Af6980e7af8fa59afebda0284ceedd81d": {
+  "RAGMultiAgentAPIDeployment292FFC9A9c763766b02675fb496d8b317a54d4c7": {
    "Type": "AWS::ApiGateway::Deployment",
    "Properties": {
     "Description": "Automatically created by the RestApi construct",
@@ -788,8 +788,8 @@
     "RAGMultiAgentAPIaskOPTIONS5BDE296D",
     "RAGMultiAgentAPIaskPOST16E40B6B",
     "RAGMultiAgentAPIaskB6BD6581",
-    "RAGMultiAgentAPIgetanswerGET2F42ABC2",
     "RAGMultiAgentAPIgetanswerOPTIONSEE6DE109",
+    "RAGMultiAgentAPIgetanswerPOST3164CF6B",
     "RAGMultiAgentAPIgetanswerFD8B4365",
     "RAGMultiAgentAPIgethistoryGET07C28E96",
     "RAGMultiAgentAPIgethistoryOPTIONSDC785766",
@@ -815,7 +815,7 @@
      "Format": "{\"requestId\":\"$context.requestId\",\"ip\":\"$context.identity.sourceIp\",\"user\":\"$context.identity.user\",\"caller\":\"$context.identity.caller\",\"requestTime\":\"$context.requestTime\",\"httpMethod\":\"$context.httpMethod\",\"resourcePath\":\"$context.resourcePath\",\"status\":\"$context.status\",\"protocol\":\"$context.protocol\",\"responseLength\":\"$context.responseLength\"}"
     },
     "DeploymentId": {
-     "Ref": "RAGMultiAgentAPIDeployment292FFC9Af6980e7af8fa59afebda0284ceedd81d"
+     "Ref": "RAGMultiAgentAPIDeployment292FFC9A9c763766b02675fb496d8b317a54d4c7"
     },
     "MethodSettings": [
      {
@@ -1045,7 +1045,7 @@
     "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/Resource"
    }
   },
-  "RAGMultiAgentAPIgetanswerGETApiPermissionMultiAgentStackRAGMultiAgentAPI9107A53BGETgetanswer925E14D5": {
+  "RAGMultiAgentAPIgetanswerPOSTApiPermissionMultiAgentStackRAGMultiAgentAPI9107A53BPOSTgetanswer1562F4DE": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1080,16 +1080,16 @@
        {
         "Ref": "RAGMultiAgentAPIDeploymentStageprodB82550D9"
        },
-       "/GET/get-answer"
+       "/POST/get-answer"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer"
+    "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/POST/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer"
    }
   },
-  "RAGMultiAgentAPIgetanswerGETApiPermissionTestMultiAgentStackRAGMultiAgentAPI9107A53BGETgetanswer026DA34A": {
+  "RAGMultiAgentAPIgetanswerPOSTApiPermissionTestMultiAgentStackRAGMultiAgentAPI9107A53BPOSTgetanswerB0E67565": {
    "Type": "AWS::Lambda::Permission",
    "Properties": {
     "Action": "lambda:InvokeFunction",
@@ -1120,20 +1120,20 @@
        {
         "Ref": "RAGMultiAgentAPIB3A8E7C6"
        },
-       "/test-invoke-stage/GET/get-answer"
+       "/test-invoke-stage/POST/get-answer"
       ]
      ]
     }
    },
    "Metadata": {
-    "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.GET..get-answer"
+    "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/POST/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-answer"
    }
   },
-  "RAGMultiAgentAPIgetanswerGET2F42ABC2": {
+  "RAGMultiAgentAPIgetanswerPOST3164CF6B": {
    "Type": "AWS::ApiGateway::Method",
    "Properties": {
     "AuthorizationType": "NONE",
-    "HttpMethod": "GET",
+    "HttpMethod": "POST",
     "Integration": {
      "IntegrationHttpMethod": "POST",
      "Type": "AWS_PROXY",
@@ -1169,7 +1169,7 @@
     }
    },
    "Metadata": {
-    "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/GET/Resource"
+    "aws:cdk:path": "MultiAgentStack/RAGMultiAgentAPI/Default/get-answer/POST/Resource"
    }
   },
   "RAGMultiAgentAPIgetanswerOPTIONSEE6DE109": {
@@ -1184,7 +1184,7 @@
        "ResponseParameters": {
         "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
         "method.response.header.Access-Control-Allow-Origin": "'*'",
-        "method.response.header.Access-Control-Allow-Methods": "'GET'"
+        "method.response.header.Access-Control-Allow-Methods": "'POST'"
        },
        "StatusCode": "204"
       }

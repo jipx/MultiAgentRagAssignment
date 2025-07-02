@@ -1,0 +1,114 @@
+{
+    "questions": [
+        {
+            "question": "What does Morgan middleware do in Express?",
+            "choices": [
+                "Serves static files",
+                "Manages sessions",
+                "Logs HTTP requests",
+                "Handles routing"
+            ],
+            "answer": "Logs HTTP requests",
+            "explanation": "Morgan logs HTTP requests in various formats."
+        },
+        {
+            "question": "Which module supports rotating log files with Morgan?",
+            "choices": [
+                "logrotate-stream",
+                "rotating-file-stream",
+                "log4js",
+                "stream-logger"
+            ],
+            "answer": "rotating-file-stream",
+            "explanation": "rotating-file-stream rotates logs on intervals or size."
+        },
+        {
+            "question": "Where should log files be stored for best security?",
+            "choices": [
+                "Public folder",
+                "GitHub repo",
+                "Non-public server directory",
+                "Environment variables"
+            ],
+            "answer": "Non-public server directory",
+            "explanation": "Storing logs outside the public web root helps protect sensitive data."
+        },
+        {
+            "question": "How can you define a custom log token in Morgan?",
+            "choices": [
+                "morgan.define()",
+                "morgan.custom()",
+                "morgan.token()",
+                "token.define()"
+            ],
+            "answer": "morgan.token()",
+            "explanation": "Use morgan.token(name, callback) to create a custom token."
+        },
+        {
+            "question": "What format can you use to output logs in JSON?",
+            "choices": [
+                "short",
+                "combined",
+                "jsonFormat",
+                "common"
+            ],
+            "answer": "jsonFormat",
+            "explanation": "You define and use a custom format named 'jsonFormat' for JSON logging."
+        },
+        {
+            "question": "Which module helps build log directory paths?",
+            "choices": [
+                "os",
+                "fs",
+                "path",
+                "stream"
+            ],
+            "answer": "path",
+            "explanation": "Node's path module helps create cross-platform file paths."
+        },
+        {
+            "question": "What happens if the log directory doesn't exist?",
+            "choices": [
+                "Morgan creates it",
+                "App crashes",
+                "Morgan disables logging",
+                "You must create it manually"
+            ],
+            "answer": "App crashes",
+            "explanation": "If not handled, the app will crash unless the directory is manually created in code."
+        },
+        {
+            "question": "Which middleware should Morgan be placed after?",
+            "choices": [
+                "Static middleware",
+                "Routes",
+                "Error handler",
+                "Body parser"
+            ],
+            "answer": "Body parser",
+            "explanation": "Morgan should be placed after body parsing but before route handling."
+        },
+        {
+            "question": "How can you simulate an exception for testing logs?",
+            "choices": [
+                "Correct DB credentials",
+                "Catch error silently",
+                "Use invalid DB credentials",
+                "Disable Morgan"
+            ],
+            "answer": "Use invalid DB credentials",
+            "explanation": "Using wrong credentials will simulate DB errors and generate logs."
+        },
+        {
+            "question": "What\u2019s the purpose of res.locals.errorMessage?",
+            "choices": [
+                "Displays user message",
+                "Sends logs to client",
+                "Sets custom error for logging",
+                "Creates routes"
+            ],
+            "answer": "Sets custom error for logging",
+            "explanation": "Used to set error info which is later read by Morgan\u2019s custom token."
+        }
+    ]
+}
