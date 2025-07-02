@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "question": "What is the primary purpose of using Morgan in this lab?",
+      "choices": ["To encrypt log files", "For secure logging in Express.js", "To manage database connections", "To handle user authentication"],
+      "answer": "For secure logging in Express.js",
+      "explanation": "Morgan is used in this lab to apply secure logging practices in an Express.js application, as stated in the lab objectives."
+    },
+    {
+      "question": "Which module is used to create rotating log files?",
+      "choices": ["fs", "path", "morgan", "rotating-file-stream"],
+      "answer": "rotating-file-stream",
+      "explanation": "The rotating-file-stream module is used to create a rotating log stream with a 12-hour interval, as shown in Step 2 of the lab instructions."
+    },
+    {
+      "question": "What is the purpose of creating a custom token for exception logging?",
+      "choices": ["To encrypt log messages", "To capture and log error messages", "To compress log files", "To send logs to a remote server"],
+      "answer": "To capture and log error messages",
+      "explanation": "The custom token for exception logging is created to capture and include error messages in the log entries, as demonstrated in Step 3."
+    },
+    {
+      "question": "What format is used for the custom JSON logging in this lab?",
+      "choices": ["XML", "CSV", "JSON", "Plain text"],
+      "answer": "JSON",
+      "explanation": "The lab demonstrates how to define a custom JSON format for logging, which includes method, URL, IP, and exceptions."
+    },
+    {
+      "question": "How often are log files rotated in this lab setup?",
+      "choices": ["Every 6 hours", "Every 12 hours", "Every 24 hours", "Every week"],
+      "answer": "Every 12 hours",
+      "explanation": "The lab instructions specify setting up a rotating log stream with a 12-hour interval."
+    },
+    {
+      "question": "What information is NOT included in the custom JSON log format?",
+      "choices": ["Method", "URL", "IP address", "Response status code"],
+      "answer": "Response status code",
+      "explanation": "The custom JSON format defined in the lab includes method, URL, IP, and exception, but does not explicitly include the response status code."
+    },
+    {
+      "question": "How is an exception simulated in the lab?",
+      "choices": ["By creating a syntax error", "By setting wrong database credentials", "By overloading the server", "By deleting a critical file"],
+      "answer": "By setting wrong database credentials",
+      "explanation": "The lab instructs to edit databaseConfig.js and intentionally set wrong credentials to simulate an error."
+    },
+    {
+      "question": "Where are the log files stored in this project?",
+      "choices": ["In the root directory", "In a 'logs' folder", "In a 'log' folder", "In the 'public' folder"],
+      "answer": "In a 'log' folder",
+      "explanation": "The lab instructions specify creating and using a 'log' directory for storing log files."
+    },
+    {
+      "question": "What is the purpose of using res.locals.errorMessage in the routes?",
+      "choices": ["To display errors to the user", "To set the HTTP status code", "To capture error messages for logging", "To trigger server restart"],
+      "answer": "To capture error messages for logging",
+      "explanation": "res.locals.errorMessage is used to set the error message that will be captured by the custom exception token for logging."
+    },
+    {
+      "question": "Which of the following is NOT mentioned as a learning point in the lab?",
+      "choices": ["Middleware usage", "Database optimization", "Error handling", "Security awareness"],
+      "answer": "Database optimization",
+      "explanation": "Database optimization is not mentioned in the learning points section of the lab. The focus is on logging, middleware, error handling, and security awareness."
+    }
+  ]
+}
