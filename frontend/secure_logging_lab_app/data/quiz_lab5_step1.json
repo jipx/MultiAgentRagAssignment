@@ -1,64 +1,64 @@
 {
   "questions": [
     {
-      "question": "What is the primary purpose of using Morgan in this Express.js application?",
-      "choices": ["For database management", "For secure logging", "For user authentication", "For route handling"],
-      "answer": "For secure logging",
-      "explanation": "Morgan is used in this project to apply secure logging practices in the Express.js application, as stated in the objectives."
+      "question": "What is the primary purpose of using Morgan in this lab?",
+      "choices": ["To encrypt log files", "For logging in Express.js applications", "To manage database connections", "To handle user authentication"],
+      "answer": "For logging in Express.js applications",
+      "explanation": "Morgan is used in this lab to apply secure logging practices in an Express.js application, allowing for customizable log formats and outputs."
     },
     {
       "question": "Which module is used to create rotating log files?",
       "choices": ["fs", "path", "morgan", "rotating-file-stream"],
       "answer": "rotating-file-stream",
-      "explanation": "The rotating-file-stream module is used to create a rotating log stream with a 12-hour interval, as shown in Step 2 of the instructions."
+      "explanation": "The rotating-file-stream module is used to create a rotating log stream, which helps manage log size by creating new log files periodically."
+    },
+    {
+      "question": "What is the default logging format used when first applying Morgan?",
+      "choices": ["dev", "combined", "common", "tiny"],
+      "answer": "combined",
+      "explanation": "The lab instructions show that Morgan is initially applied using the 'combined' format, which provides Apache-style log output."
+    },
+    {
+      "question": "How often are log files rotated in this lab setup?",
+      "choices": ["Every 6 hours", "Every 12 hours", "Every 24 hours", "Every week"],
+      "answer": "Every 12 hours",
+      "explanation": "The lab sets up a rotating log stream with a 12-hour interval using the configuration option 'interval: '12h''."
     },
     {
       "question": "What is the purpose of creating a custom token for exception logging?",
-      "choices": ["To encrypt log entries", "To include error messages in logs", "To compress log files", "To validate user input"],
-      "answer": "To include error messages in logs",
-      "explanation": "The custom token for exception logging is created to include error messages (stored in res.locals.errorMessage) in the log entries."
-    },
-    {
-      "question": "In what format are the custom log entries structured?",
-      "choices": ["XML", "CSV", "JSON", "Plain text"],
-      "answer": "JSON",
-      "explanation": "The custom log format is defined as 'jsonFormat' and returns a JSON.stringify() result, structuring the log entries in JSON format."
-    },
-    {
-      "question": "What is the interval set for rotating log files?",
-      "choices": ["6 hours", "12 hours", "24 hours", "48 hours"],
-      "answer": "12 hours",
-      "explanation": "The rotating log stream is set up with a 12-hour interval, as specified in the code: interval: '12h'."
+      "choices": ["To encrypt error messages", "To include custom error information in logs", "To prevent exceptions from occurring", "To send error notifications"],
+      "answer": "To include custom error information in logs",
+      "explanation": "The custom token for exception logging allows including specific error messages in the log entries, enhancing the detail of error reporting."
     },
     {
       "question": "Which of the following is NOT included in the custom JSON log format?",
-      "choices": ["Method", "URL", "IP address", "Response status code"],
-      "answer": "Response status code",
-      "explanation": "The custom JSON format includes method, URL, IP, and exception, but does not include the response status code."
+      "choices": ["Method", "URL", "IP address", "User agent"],
+      "answer": "User agent",
+      "explanation": "The custom JSON format includes method, URL, IP, date, and exception, but does not include the user agent information."
     },
     {
       "question": "How is an exception simulated in the lab?",
-      "choices": ["By creating a non-existent route", "By setting wrong database credentials", "By overloading the server", "By introducing a syntax error"],
+      "choices": ["By creating a syntax error", "By setting wrong database credentials", "By overloading the server", "By deleting essential files"],
       "answer": "By setting wrong database credentials",
-      "explanation": "The lab instructions suggest editing databaseConfig.js and intentionally setting wrong credentials to simulate an error."
+      "explanation": "The lab instructs to edit the database configuration file and intentionally set wrong credentials to simulate an error condition."
     },
     {
-      "question": "Where are the log files stored in this project?",
-      "choices": ["In the root directory", "In a 'logs' folder", "In a 'log' folder", "In the 'src' directory"],
-      "answer": "In a 'log' folder",
-      "explanation": "The log files are stored in a 'log' folder, as specified in the code: const logDirectory = path.join(__dirname, '..', 'log');"
+      "question": "What is the correct order of applying middleware in Express for this lab?",
+      "choices": ["Body parser, routes, Morgan", "Morgan, body parser, routes", "Routes, Morgan, body parser", "Morgan, routes, body parser"],
+      "answer": "Morgan, body parser, routes",
+      "explanation": "The troubleshooting tips mention that Morgan should be applied after the body parser and before the routes for proper logging."
     },
     {
-      "question": "What should be done if logs are not showing up?",
-      "choices": ["Restart the server", "Check if the 'log/' directory exists", "Increase log level", "Disable Morgan"],
-      "answer": "Check if the 'log/' directory exists",
-      "explanation": "One of the troubleshooting tips suggests checking if the 'log/' directory exists and creating it manually if it doesn't."
+      "question": "Which module is used to ensure cross-platform compatibility when managing log directories?",
+      "choices": ["fs", "path", "os", "process"],
+      "answer": "path",
+      "explanation": "The path module is used in conjunction with fs to manage cross-platform log directories, ensuring compatibility across different operating systems."
     },
     {
-      "question": "What is a potential security concern when implementing logging?",
-      "choices": ["Logs may consume too much disk space", "Logging slows down the application", "Improper exposure of logs may leak sensitive information", "Logs may interfere with database operations"],
-      "answer": "Improper exposure of logs may leak sensitive information",
-      "explanation": "The learning points mention that exposing logs improperly may leak sensitive information, highlighting this as a security awareness consideration."
+      "question": "What security consideration is mentioned regarding logs?",
+      "choices": ["Logs should always be encrypted", "Exposing logs may leak sensitive information", "Logs should be deleted immediately", "Only admins should have access to logs"],
+      "answer": "Exposing logs may leak sensitive information",
+      "explanation": "The lab mentions in the Learning Points section that understanding the security implications of exposing logs is important, as it may leak sensitive information."
     }
   ]
 }

@@ -11,12 +11,15 @@ st.set_page_config(page_title="Secure Lab App", layout="wide")
 
 # --- Initialize uploaded files from 'data/' folder ---
 def init_uploaded_from_data_folder():
-    base_path = "data"
+    base_path = os.path.join(os.getcwd(), "data")
     lab_keys = ["labnotes", "quiz", "solution", "original"]
     uploaded = {}
 
-    if not os.path.exists(base_path):
-        os.makedirs(base_path)
+    try:
+        if not os.path.exists(base_path):
+            os.makedirs(base_path)
+    except Exception as e:
+        st.error(f"❌ Unable to create or access data folder: {str(e)}")
         return {key: None for key in lab_keys}
 
     for key in lab_keys:
