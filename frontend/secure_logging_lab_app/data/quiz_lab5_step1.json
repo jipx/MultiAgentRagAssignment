@@ -1,66 +1,64 @@
-Here are 10 multiple-choice questions based on the provided lab content:
-
 {
   "questions": [
     {
-      "question": "What is the primary purpose of using Morgan in this lab?",
-      "choices": ["For database management", "For secure logging", "For user authentication", "For server-side rendering"],
+      "question": "What is the primary purpose of using Morgan in this Express.js application?",
+      "choices": ["For database management", "For secure logging", "For user authentication", "For route handling"],
       "answer": "For secure logging",
-      "explanation": "The lab demonstrates how to apply secure logging practices in an Express.js application using Morgan."
+      "explanation": "Morgan is used in this project to apply secure logging practices in the Express.js application, as stated in the objectives."
     },
     {
-      "question": "Which npm package is used to create rotating log files?",
-      "choices": ["morgan", "fs", "path", "rotating-file-stream"],
+      "question": "Which module is used to create rotating log files?",
+      "choices": ["fs", "path", "morgan", "rotating-file-stream"],
       "answer": "rotating-file-stream",
-      "explanation": "The rotating-file-stream package is used to create a new log file periodically, helping manage log size and prevent log overflow."
+      "explanation": "The rotating-file-stream module is used to create a rotating log stream with a 12-hour interval, as shown in Step 2 of the instructions."
     },
     {
-      "question": "What is the interval set for rotating log files in this lab?",
+      "question": "What is the purpose of creating a custom token for exception logging?",
+      "choices": ["To encrypt log entries", "To include error messages in logs", "To compress log files", "To validate user input"],
+      "answer": "To include error messages in logs",
+      "explanation": "The custom token for exception logging is created to include error messages (stored in res.locals.errorMessage) in the log entries."
+    },
+    {
+      "question": "In what format are the custom log entries structured?",
+      "choices": ["XML", "CSV", "JSON", "Plain text"],
+      "answer": "JSON",
+      "explanation": "The custom log format is defined as 'jsonFormat' and returns a JSON.stringify() result, structuring the log entries in JSON format."
+    },
+    {
+      "question": "What is the interval set for rotating log files?",
       "choices": ["6 hours", "12 hours", "24 hours", "48 hours"],
       "answer": "12 hours",
-      "explanation": "The lab sets up a rotating log stream with a 12-hour interval using the line: interval: '12h'."
+      "explanation": "The rotating log stream is set up with a 12-hour interval, as specified in the code: interval: '12h'."
     },
     {
-      "question": "Which of the following is NOT a module imported for logging setup?",
-      "choices": ["fs", "path", "express", "rotating-file-stream"],
-      "answer": "express",
-      "explanation": "The lab imports fs, path, and rotating-file-stream for logging setup, but express is not specifically mentioned for this purpose."
-    },
-    {
-      "question": "What format is used for structuring log entries in this lab?",
-      "choices": ["XML", "YAML", "JSON", "Plain text"],
-      "answer": "JSON",
-      "explanation": "The lab defines a custom JSON format for log entries, including method, URL, IP, and exceptions."
-    },
-    {
-      "question": "What custom token is created for exception logging?",
-      "choices": ["error", "exception", "log", "errorMessage"],
-      "answer": "exception",
-      "explanation": "The lab creates a custom token named 'exception' for logging error messages."
+      "question": "Which of the following is NOT included in the custom JSON log format?",
+      "choices": ["Method", "URL", "IP address", "Response status code"],
+      "answer": "Response status code",
+      "explanation": "The custom JSON format includes method, URL, IP, and exception, but does not include the response status code."
     },
     {
       "question": "How is an exception simulated in the lab?",
-      "choices": ["By creating a syntax error", "By setting wrong database credentials", "By overloading the server", "By deleting essential files"],
+      "choices": ["By creating a non-existent route", "By setting wrong database credentials", "By overloading the server", "By introducing a syntax error"],
       "answer": "By setting wrong database credentials",
-      "explanation": "The lab instructs to edit databaseConfig.js and intentionally set wrong credentials to simulate an error."
+      "explanation": "The lab instructions suggest editing databaseConfig.js and intentionally setting wrong credentials to simulate an error."
     },
     {
-      "question": "Where are the log files stored in the project structure?",
-      "choices": ["In the root directory", "In a 'logs' folder", "In a 'log' folder", "In the 'src' folder"],
+      "question": "Where are the log files stored in this project?",
+      "choices": ["In the root directory", "In a 'logs' folder", "In a 'log' folder", "In the 'src' directory"],
       "answer": "In a 'log' folder",
-      "explanation": "The lab creates a 'log' directory to store the log files: const logDirectory = path.join(__dirname, '..', 'log');"
-    },
-    {
-      "question": "What does the custom JSON format NOT include?",
-      "choices": ["Method", "URL", "IP address", "Response status code"],
-      "answer": "Response status code",
-      "explanation": "The custom JSON format includes method, URL, IP, and exception, but does not explicitly include the response status code."
+      "explanation": "The log files are stored in a 'log' folder, as specified in the code: const logDirectory = path.join(__dirname, '..', 'log');"
     },
     {
       "question": "What should be done if logs are not showing up?",
       "choices": ["Restart the server", "Check if the 'log/' directory exists", "Increase log level", "Disable Morgan"],
       "answer": "Check if the 'log/' directory exists",
       "explanation": "One of the troubleshooting tips suggests checking if the 'log/' directory exists and creating it manually if it doesn't."
+    },
+    {
+      "question": "What is a potential security concern when implementing logging?",
+      "choices": ["Logs may consume too much disk space", "Logging slows down the application", "Improper exposure of logs may leak sensitive information", "Logs may interfere with database operations"],
+      "answer": "Improper exposure of logs may leak sensitive information",
+      "explanation": "The learning points mention that exposing logs improperly may leak sensitive information, highlighting this as a security awareness consideration."
     }
   ]
 }
