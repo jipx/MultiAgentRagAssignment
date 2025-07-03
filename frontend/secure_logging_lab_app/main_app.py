@@ -148,14 +148,22 @@ if st.sidebar.button("🧠 Generate Quiz"):
                     # process answer after polling completes
                     if "answer" in result and result["answer"]:
                         raw_text = result["answer"][0].get("text", "")
+
+                        # 🆕 extract embedded JSON if it exists after a prefix
+                        if raw_text.lstrip().startswith("{"):
+                            json_text = raw_text
+                        else:
+                            start_index = raw_text.find("{")
+                            json_text = raw_text[start_index:] if start_index != -1 else raw_text
+
                         quiz_file = get_filename("quiz", lab_choice, step_choice, "json")
                         with open(quiz_file, "w", encoding="utf-8") as f:
-                            f.write(raw_text)
+                            f.write(json_text)
                         st.session_state.uploaded["quiz"] = quiz_file
                         st.success("✅ Quiz generated and saved.")
 
                         try:
-                            quiz_data = json.loads(raw_text)
+                            quiz_data = json.loads(json_text)
                             st.subheader("🧠 Generated Quiz Questions")
                             for idx, q in enumerate(quiz_data.get("questions", []), start=1):
                                 with st.expander(f"Q{idx}: {q['question']}"):

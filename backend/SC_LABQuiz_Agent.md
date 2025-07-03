@@ -7,7 +7,7 @@
 [ 👩‍🎓 User (Streamlit App) ]
    |
    | Enters lab topic and clicks "Generate Quiz"
-   v
+   
 [ API Gateway: POST /ask ]
    |
    | Payload:
