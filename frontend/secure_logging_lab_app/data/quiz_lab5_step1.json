@@ -1,18 +1,18 @@
 {
   "questions": [
     {
-      "question": "What is the primary purpose of using Morgan in this lab?",
+      "question": "What is the primary purpose of using Morgan in this Express.js application?",
       "choices": [
-        "Database management",
-        "User authentication",
-        "Secure logging",
-        "Performance optimization"
+        "For database management",
+        "For secure logging",
+        "For user authentication",
+        "For route handling"
       ],
-      "answer": "Secure logging",
-      "explanation": "The lab demonstrates how to apply secure logging practices in an Express.js application using Morgan, which is a logging middleware."
+      "answer": "For secure logging",
+      "explanation": "Morgan is used in this project to apply secure logging practices in the Express.js application, allowing for structured and customizable logging of HTTP requests and responses."
     },
     {
-      "question": "Which module is used to create rotating log files?",
+      "question": "Which module is used to create a rotating log file stream?",
       "choices": [
         "fs",
         "path",
@@ -20,21 +20,21 @@
         "rotating-file-stream"
       ],
       "answer": "rotating-file-stream",
-      "explanation": "The rotating-file-stream module is used to create a rotating log stream, which helps manage log size by creating new log files periodically."
+      "explanation": "The rotating-file-stream module is used to create a rotating log stream, which helps manage log size by creating new log files at specified intervals."
     },
     {
-      "question": "What is the purpose of creating a custom token in Morgan?",
+      "question": "What is the purpose of creating a custom token for exception logging?",
       "choices": [
-        "To encrypt log data",
-        "To log exceptions",
-        "To authenticate users",
+        "To encrypt log messages",
+        "To include error messages in logs",
+        "To validate user input",
         "To compress log files"
       ],
-      "answer": "To log exceptions",
-      "explanation": "A custom token is created to log exceptions, allowing for the inclusion of error messages in the log entries."
+      "answer": "To include error messages in logs",
+      "explanation": "The custom token for exception logging allows the inclusion of error messages (stored in res.locals.errorMessage) in the log entries, providing more detailed information about exceptions."
     },
     {
-      "question": "How often are log files rotated in this lab setup?",
+      "question": "How often are the log files rotated in this setup?",
       "choices": [
         "Every 6 hours",
         "Every 12 hours",
@@ -42,10 +42,10 @@
         "Every week"
       ],
       "answer": "Every 12 hours",
-      "explanation": "The lab sets up a rotating log stream with a 12-hour interval using the configuration `interval: '12h'`."
+      "explanation": "The rotating log stream is set up with an interval of '12h', meaning new log files are created every 12 hours."
     },
     {
-      "question": "What format is used for structuring log entries in this lab?",
+      "question": "What format is used for structuring the log entries?",
       "choices": [
         "XML",
         "CSV",
@@ -53,62 +53,62 @@
         "Plain text"
       ],
       "answer": "JSON",
-      "explanation": "The lab defines a custom JSON format for log entries, which includes method, URL, IP, and exceptions."
+      "explanation": "The custom log format 'jsonFormat' is defined to structure log entries in JSON format, including method, URL, IP, and exceptions."
+    },
+    {
+      "question": "Where are the log files stored in this project?",
+      "choices": [
+        "In the root directory",
+        "In a 'log' subdirectory",
+        "In the 'controller' directory",
+        "In the system's temp directory"
+      ],
+      "answer": "In a 'log' subdirectory",
+      "explanation": "The log files are stored in a 'log' subdirectory, which is created if it doesn't exist using fs.mkdirSync(logDirectory)."
+    },
+    {
+      "question": "What is the purpose of setting res.locals.errorMessage in the route handlers?",
+      "choices": [
+        "To display errors to users",
+        "To log exceptions",
+        "To trigger error handling middleware",
+        "To send error responses"
+      ],
+      "answer": "To log exceptions",
+      "explanation": "Setting res.locals.errorMessage in route handlers allows the custom exception token to capture and include error messages in the log entries."
     },
     {
       "question": "Which of the following is NOT included in the custom JSON log format?",
       "choices": [
-        "Exception",
-        "Method",
+        "HTTP method",
         "URL",
+        "IP address",
         "Response status code"
       ],
       "answer": "Response status code",
-      "explanation": "The custom JSON format includes exception, method, URL, IP, and date, but not the response status code."
+      "explanation": "The custom JSON log format includes method, URL, IP, and exceptions, but does not explicitly include the response status code."
     },
     {
-      "question": "What is the purpose of setting 'res.locals.errorMessage' in the routes?",
+      "question": "What is the purpose of intentionally setting wrong credentials in databaseConfig.js?",
       "choices": [
-        "To display errors to users",
-        "To log exceptions",
-        "To handle database errors",
-        "To validate user input"
+        "To test database security",
+        "To simulate an exception for logging",
+        "To bypass authentication",
+        "To stress test the server"
       ],
-      "answer": "To log exceptions",
-      "explanation": "Setting 'res.locals.errorMessage' allows the custom Morgan token to capture and log exception messages."
+      "answer": "To simulate an exception for logging",
+      "explanation": "Setting incorrect database credentials is done to simulate an error, allowing testing of the exception logging functionality."
     },
     {
-      "question": "Which Node.js core modules are used in this lab for log directory management?",
+      "question": "What security consideration is mentioned regarding log exposure?",
       "choices": [
-        "http and net",
-        "fs and path",
-        "crypto and os",
-        "stream and buffer"
+        "Logs should always be encrypted",
+        "Logs may contain sensitive information",
+        "Logs should be publicly accessible",
+        "Logs should be deleted immediately"
       ],
-      "answer": "fs and path",
-      "explanation": "The fs (File System) and path modules are used to manage the log directory and ensure it exists before writing logs."
-    },
-    {
-      "question": "What security consideration is mentioned regarding logging?",
-      "choices": [
-        "Encrypting log files",
-        "Using HTTPS for logging",
-        "Avoiding sensitive information in logs",
-        "Implementing log rotation"
-      ],
-      "answer": "Avoiding sensitive information in logs",
-      "explanation": "The lab mentions that exposing logs improperly may leak sensitive information, highlighting the importance of careful log management."
-    },
-    {
-      "question": "What should be done if Morgan is not logging as expected?",
-      "choices": [
-        "Reinstall Node.js",
-        "Change the log format",
-        "Apply Morgan middleware after body parser and before routes",
-        "Increase server memory"
-      ],
-      "answer": "Apply Morgan middleware after body parser and before routes",
-      "explanation": "The troubleshooting tips suggest ensuring that Morgan middleware is applied after the body parser and before the routes for proper logging."
+      "answer": "Logs may contain sensitive information",
+      "explanation": "The lab mentions that exposing logs improperly may leak sensitive information, highlighting the importance of secure log management."
     }
   ]
 }

@@ -45,12 +45,20 @@ def save_quiz_to_data_folder(quiz_data, lab, step):
         st.error(f"❌ Could not save quiz: {e}")
         return None
 
+
 def render_lab_tabs(lab_choice, step_choice, uploaded=None):
+    if "uploaded" not in st.session_state:
+        st.session_state.uploaded = uploaded or {}
+
     tabs = st.tabs(["Lab", "Hint", "Quiz", "Solution", "Lab Score"])
 
     with tabs[0]:
         st.header("Lab Content")
-        lab_file = uploaded.get("labnotes") if uploaded else get_filename("labnotes", lab_choice, step_choice, "txt")
+        lab_file = (
+            st.session_state.uploaded.get("labnotes")
+            if st.session_state.uploaded.get("labnotes")
+            else get_filename("labnotes", lab_choice, step_choice, "txt")
+        )
         lab_notes = load_file_content(lab_file, "Lab notes not found.")
         st.markdown(lab_notes)
 
@@ -61,16 +69,20 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
 
     with tabs[2]:
         st.header("🧠 Quiz")
-        quiz_file = uploaded.get("quiz") if uploaded else get_filename("quiz", lab_choice, step_choice, "json")
+        quiz_file = (
+            st.session_state.uploaded.get("quiz")
+            if st.session_state.uploaded.get("quiz")
+            else get_filename("quiz", lab_choice, step_choice, "json")
+        )
         quiz_data = load_quiz_data(quiz_file)
         questions = quiz_data.get("questions", [])
 
-        # ✅ Automatically save uploaded quiz to data folder
-        if uploaded and uploaded.get("quiz") and questions:
+        # ✅ Save to /data if uploaded quiz provided
+        if st.session_state.uploaded.get("quiz") and questions:
             save_quiz_to_data_folder(quiz_data, lab_choice, step_choice)
 
         if questions:
-            if 'submitted_answers' not in st.session_state:
+            if "submitted_answers" not in st.session_state:
                 st.session_state.submitted_answers = {}
 
             st.write(f"Total Questions: {len(questions)}")
@@ -104,8 +116,16 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
     with tabs[3]:
         st.header("🔍 Code Difference (Unified View)")
 
-        solution_file = uploaded.get("solution") if uploaded else get_filename("solution", lab_choice, step_choice, "txt")
-        original_file = uploaded.get("original") if uploaded else get_filename("original", lab_choice, step_choice, "txt")
+        solution_file = (
+            st.session_state.uploaded.get("solution")
+            if st.session_state.uploaded.get("solution")
+            else get_filename("solution", lab_choice, step_choice, "txt")
+        )
+        original_file = (
+            st.session_state.uploaded.get("original")
+            if st.session_state.uploaded.get("original")
+            else get_filename("original", lab_choice, step_choice, "txt")
+        )
         solution = load_file_content(solution_file, "Solution not available.").splitlines()
         original = load_file_content(original_file, "Original code not available.").splitlines()
 
@@ -125,7 +145,7 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
             user_comment = st.text_area("Leave your feedback:", height=150)
 
             if st.button("💾 Save Comment"):
-                comments_dir = os.path.join(os.getcwd(), 'comments')
+                comments_dir = os.path.join(os.getcwd(), "comments")
                 os.makedirs(comments_dir, exist_ok=True)
                 comment_path = os.path.join(
                     comments_dir,
@@ -139,7 +159,7 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
 
     with tabs[4]:
         st.header("Lab Score")
-        if 'submitted_answers' in st.session_state:
+        if "submitted_answers" in st.session_state:
             total = len(st.session_state.submitted_answers)
             correct = sum(
                 1 for idx, q in enumerate(questions)
