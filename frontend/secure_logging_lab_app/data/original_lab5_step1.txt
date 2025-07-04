@@ -1,0 +1,27 @@
+var express = require('express');
+var bodyParser = require('body-parser');
+var app = express();
+var user = require('../model/user.js');
+var cors = require('cors');
+var validator = require('validator');
+//var validateFn=require('../validation/validationFns');
+
+app.options('*', cors());
+app.use(cors());
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+app.use(bodyParser.json());
+app.use(urlencodedParser);
+
+app.get('/user/:userid', function (req, res) {
+    var id = req.params.userid;
+
+    user.getUser(id, function (err, result) {
+        if (!err) {
+            //validateFn.sanitizeResult(result);
+            res.send(result);
+        } else {
+            res.status(500).send("Some error");
+        }
+    });
+});
