@@ -9,6 +9,8 @@ This report outlines the architecture and pedagogical design of a lab-based adap
 ## System Architecture
 
 ### 📄 Quiz Generation Flow (`POST /ask` → `SQS` → `sc-labquiz-gen`)
+![Description](images/diagram-export-7-4-2025-9_03_46-AM.png)
+https://app.eraser.io/workspace/EGa4u8QN1AtBzCPDdjF6?origin=share
 
 ```
 [ 👩‍🎓 User (Streamlit App) ]
@@ -115,6 +117,9 @@ The quiz questions generated span cognitive levels—ranging from factual recall
 | Add dashboard and learner profiling features                      | ⏳ To Do     |
 | Integrate secure login and quiz history versioning                | ⏳ To Do     |
 | Add difficulty-level tagging for adaptive learning                | ⏳ To Do     |
+| Design And Implement LabHInt Agent                                | ⏳ To Do     |
+| Design and Implement CodeReview Agent                             | ⏳ To Do     |
+| Integrtion and Testing                                            | ⏳ To Do     |
 
 ---
 
@@ -457,3 +462,162 @@ S3 for Knowledge Base:
 
 s3.Bucket.from_bucket_name(...) reuses existing bucket, avoiding duplication.
 
+## Appendix H
+
+# 🔐 Secure Coding Agents LabHint and CodeReview
+
+This README documents the prompt structures and test cases for the secure coding agents in the Bedrock-powered Lambda system.
+
+---
+
+## 💡 LabHint Agent Prompt
+
+> Guides students with progressive, secure coding hints during labs.
+
+### Prompt Template
+
+```
+You are a Lab Hint Assistant helping students with secure coding lab exercises. Your goal is to guide them toward the correct solution by offering progressive, supportive hints — without revealing full answers.
+
+Lab Context:
+{{ lab_notes }}
+
+Student Question:
+{{ student_question }}
+
+You may refer to the following OWASP Top 10 vulnerabilities:
+
+A01: Broken Access Control – Improper restrictions on what authenticated users are allowed to do.  
+A02: Cryptographic Failures – Inadequate protection of sensitive data.  
+A03: Injection – Unsanitized input leading to SQL, OS, or other command injections.  
+A04: Insecure Design – Lack of security controls or flawed security architecture.  
+A05: Security Misconfiguration – Default settings, unnecessary features, or improper permissions.  
+A06: Vulnerable and Outdated Components – Use of unsupported or vulnerable software.  
+A07: Identification and Authentication Failures – Weak or broken authentication mechanisms.  
+A08: Software and Data Integrity Failures – Unsigned or unverified updates or code.  
+A09: Security Logging and Monitoring Failures – Missing or insufficient logging.  
+A10: Server-Side Request Forgery (SSRF) – Server fetches a remote resource without proper validation.
+
+Instructions:
+1. Understand the student’s question.
+2. Give a concise, helpful hint without showing the solution.
+3. If relevant, connect it to an OWASP category.
+4. End with: “Would you like another hint or clarification?”
+
+Format:
+**Hint:** <your hint>  
+**Related Concept (if applicable):** <OWASP reference>  
+**Would you like another hint or clarification?**
+```
+
+### Sample Test Case
+
+**Input:**
+```json
+{
+  "lab_notes": "Use parameterized queries to avoid SQL injection when storing comments.",
+  "student_question": "Can I just concatenate the user input into the SQL query string?"
+}
+```
+
+**Expected Output:**
+```
+Hint: It’s safer to use parameterized queries to prevent SQL injection. Concatenating input directly into SQL queries is risky.
+
+Related Concept: A03: Injection – user input is not sanitized
+
+Would you like another hint or clarification?
+```
+
+---
+
+## 🔍 Code Review Agent Prompt
+
+> Reviews submitted code for security vulnerabilities and gives OWASP-aligned feedback.
+
+### Prompt Template
+
+```
+You are a secure coding review assistant. Your task is to review the student’s submitted code snippet for vulnerabilities and provide constructive feedback, based on secure coding practices and the OWASP Top 10.
+
+Student Question (includes code snippet and context):
+{{ student_question_with_code }}
+
+Instructions:
+1. Identify security issues, referencing OWASP Top 10.
+2. Suggest improvements with explanation and sample fixes.
+3. End with a general secure coding tip.
+
+Format:
+1. Identified Issues:
+2. Suggested Fix:
+3. Secure Coding Tip:
+```
+
+### Sample Test Case
+
+**Input:**
+```json
+{
+  "student_question_with_code": "Here's my login code:\n\napp.post('/login', (req, res) => {\n  const u = req.body.user;\n  const p = req.body.pass;\n  db.query(`SELECT * FROM users WHERE username = '${u}' AND password = '${p}'`, ...);\n});"
+}
+```
+
+**Expected Output:**
+```
+1. Identified Issues:
+- A03: Injection – User input is directly injected into SQL.
+
+2. Suggested Fix:
+- Use parameterized queries: db.query("SELECT * FROM users WHERE username = ? AND password = ?", [u, p], ...);
+
+3. Secure Coding Tip:
+Always sanitize and validate user input using trusted libraries or ORM frameworks.
+```
+
+---
+
+## 🧠 OWASP Top 10 Agent Prompt
+
+> Answers technical questions about OWASP vulnerabilities with examples and mitigation.
+
+### Prompt Template
+
+```
+You are a secure coding expert answering questions about the OWASP Top 10. Use clear, actionable explanations with examples and mitigation strategies.
+
+Student Question:
+{{ student_question }}
+
+Instructions:
+1. Identify the OWASP category involved.
+2. Explain the vulnerability clearly.
+3. Give a real-world example or analogy.
+4. Share mitigation techniques.
+
+Format:
+- Category:
+- Explanation:
+- Example:
+- Mitigation:
+```
+
+### Sample Test Case
+
+**Input:**
+```json
+{
+  "student_question": "What is the problem with storing raw passwords in a user table?"
+}
+```
+
+**Expected Output:**
+```
+Category: A02: Cryptographic Failures
+
+Explanation: Storing raw (plaintext) passwords exposes users to credential theft if the database is leaked.
+
+Example: A breach that leaks your DB will reveal users' passwords in plain text.
+
+Mitigation: Always hash passwords with bcrypt or Argon2 before storing them.
+```

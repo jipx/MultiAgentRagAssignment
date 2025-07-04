@@ -2,9 +2,9 @@
   "questions": [
     {
       "question": "What is the primary purpose of using Morgan in this lab?",
-      "choices": ["Database management", "User authentication", "Secure logging", "Frontend development"],
-      "answer": "Secure logging",
-      "explanation": "The lab focuses on applying secure logging practices in an Express.js application using Morgan, which is a popular HTTP request logger middleware."
+      "choices": ["To encrypt logs", "For logging in Express.js applications", "To create database connections", "To handle user authentication"],
+      "answer": "For logging in Express.js applications",
+      "explanation": "Morgan is used in this lab for logging in Express.js applications, allowing for detailed request logging and customization of log formats."
     },
     {
       "question": "Which module is used to create rotating log files?",
@@ -13,52 +13,52 @@
       "explanation": "The rotating-file-stream module is used to create a new log file periodically, helping manage log size and prevent log overflow."
     },
     {
-      "question": "What is the interval set for rotating log files in this lab?",
-      "choices": ["6 hours", "12 hours", "24 hours", "48 hours"],
-      "answer": "12 hours",
-      "explanation": "The lab instructions specify setting up a rotating log stream with a 12-hour interval using 'interval: '12h''."
+      "question": "What is the purpose of creating a custom token for exception logging?",
+      "choices": ["To encrypt error messages", "To capture and log runtime errors", "To prevent exceptions from occurring", "To improve application performance"],
+      "answer": "To capture and log runtime errors",
+      "explanation": "The custom token for exception logging is created to capture and log runtime errors in a structured format, enhancing error tracking and debugging."
     },
     {
-      "question": "Which of the following is NOT a learning point mentioned in the lab?",
-      "choices": ["Middleware Usage", "Logging Best Practices", "Database Optimization", "Error Handling"],
-      "answer": "Database Optimization",
-      "explanation": "Database Optimization is not mentioned as a learning point in the lab. The focus is on logging, middleware usage, and error handling."
+      "question": "How often are the log files rotated in this lab setup?",
+      "choices": ["Every 6 hours", "Every 12 hours", "Every 24 hours", "Every week"],
+      "answer": "Every 12 hours",
+      "explanation": "The lab setup configures the rotating log stream with a 12-hour interval using 'interval: '12h'' in the createStream options."
     },
     {
-      "question": "What format is used for structuring log entries in this lab?",
-      "choices": ["XML", "YAML", "CSV", "JSON"],
+      "question": "What format is used for structuring the log entries?",
+      "choices": ["XML", "CSV", "JSON", "Plain text"],
       "answer": "JSON",
-      "explanation": "The lab demonstrates how to define a custom JSON format for log entries, which includes method, URL, IP, and exceptions."
+      "explanation": "The lab demonstrates defining a custom JSON format for log entries, which includes method, URL, IP, and exceptions in a structured JSON format."
     },
     {
-      "question": "What is the purpose of creating a custom token named 'exception' in Morgan?",
-      "choices": ["To handle database errors", "To log custom exception errors", "To create user authentication tokens", "To encrypt log files"],
-      "answer": "To log custom exception errors",
-      "explanation": "The custom 'exception' token is created to include custom exception error messages in the log entries."
+      "question": "Which of the following is NOT included in the custom JSON log format?",
+      "choices": ["Method", "URL", "IP address", "Response status code"],
+      "answer": "Response status code",
+      "explanation": "The custom JSON format includes method, URL, IP, and exception, but does not explicitly include the response status code."
     },
     {
-      "question": "How is an exception simulated in the lab?",
-      "choices": ["By creating a faulty route", "By setting wrong database credentials", "By overloading the server", "By manually throwing an error"],
-      "answer": "By setting wrong database credentials",
-      "explanation": "The lab instructs to edit databaseConfig.js and intentionally set wrong credentials to simulate an error."
+      "question": "What is the purpose of setting 'res.locals.errorMessage' in the route handlers?",
+      "choices": ["To display errors to the user", "To log exceptions in the custom format", "To prevent errors from occurring", "To encrypt error messages"],
+      "answer": "To log exceptions in the custom format",
+      "explanation": "Setting 'res.locals.errorMessage' allows the custom Morgan token to capture and include exception information in the log entries."
     },
     {
-      "question": "Which of the following is NOT a step in the lab instructions?",
-      "choices": ["Console Logging with Morgan", "Apply Rotating Log File", "Implement User Authentication", "Create a Custom Token for Exception Logging"],
-      "answer": "Implement User Authentication",
-      "explanation": "Implementing User Authentication is not mentioned as a step in the lab instructions. The focus is on logging and error handling."
+      "question": "Which module is used to ensure cross-platform compatibility when working with file paths?",
+      "choices": ["fs", "path", "morgan", "rotating-file-stream"],
+      "answer": "path",
+      "explanation": "The 'path' module is used to manage cross-platform log directories, ensuring compatibility across different operating systems."
     },
     {
-      "question": "What should you do if logs are not showing up?",
-      "choices": ["Reinstall Node.js", "Check if the log/ directory exists", "Increase server memory", "Change the database"],
-      "answer": "Check if the log/ directory exists",
-      "explanation": "One of the troubleshooting tips suggests checking if the log/ directory exists and creating it manually if it doesn't."
+      "question": "What is a potential security concern when implementing logging?",
+      "choices": ["Logs consuming too much disk space", "Exposing logs improperly", "Logs slowing down the application", "Using JSON format for logs"],
+      "answer": "Exposing logs improperly",
+      "explanation": "The lab mentions that exposing logs improperly may leak sensitive information, which is a security concern when implementing logging."
     },
     {
-      "question": "Where should Morgan middleware be applied in relation to other middleware?",
-      "choices": ["Before body parser and after routes", "After body parser and before routes", "Before body parser and before routes", "After body parser and after routes"],
-      "answer": "After body parser and before routes",
-      "explanation": "The troubleshooting tips mention that Morgan should be applied after the body parser and before your routes for proper logging."
+      "question": "In the lab setup, where should Morgan middleware be applied in relation to other middleware?",
+      "choices": ["Before the body parser and after routes", "After the body parser and before routes", "The order doesn't matter", "Only at the end of all middleware"],
+      "answer": "After the body parser and before routes",
+      "explanation": "The troubleshooting tips suggest that Morgan should be applied after the body parser and before your routes for proper functionality."
     }
   ]
 }
