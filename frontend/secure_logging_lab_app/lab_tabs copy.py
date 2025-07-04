@@ -2,7 +2,6 @@ import streamlit as st
 import os
 import difflib
 import json
-from pathlib import Path
 
 def get_filename(prefix, lab, step, ext):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
@@ -10,28 +9,18 @@ def get_filename(prefix, lab, step, ext):
     filename = f"{prefix}_{lab.lower().replace(' ', '_')}_{step.lower().replace(' ', '_')}.{ext}"
     return os.path.join(base_dir, filename)
 
-def load_file_content(file_input, default_text):
+def load_file_content(filepath, default_text):
     try:
-        if file_input and hasattr(file_input, "read"):
-            return file_input.read().decode("utf-8", errors="ignore")
-        if isinstance(file_input, str) or isinstance(file_input, Path):
-            with open(file_input, encoding="utf-8", errors="ignore") as f:
-                return f.read()
-        return default_text
-    except Exception as e:
-        st.error(f"Error loading file: {e}")
+        with open(filepath, encoding="utf-8", errors="ignore") as f:
+            return f.read()
+    except FileNotFoundError:
         return default_text
 
-def load_quiz_data(file_input):
+def load_quiz_data(filepath):
     try:
-        if file_input and hasattr(file_input, "read"):
-            return json.load(file_input)
-        if isinstance(file_input, str) or isinstance(file_input, Path):
-            with open(file_input, encoding="utf-8", errors="ignore") as f:
-                return json.load(f)
-        return {"questions": []}
-    except Exception as e:
-        st.error(f"Failed to load quiz data: {e}")
+        with open(filepath, encoding="utf-8", errors="ignore") as f:
+            return json.load(f)
+    except FileNotFoundError:
         return {"questions": []}
 
 def render_lab_tabs(lab_choice, step_choice, uploaded=None):
