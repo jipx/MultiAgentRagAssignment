@@ -45,7 +45,6 @@ def save_quiz_to_data_folder(quiz_data, lab, step):
         st.error(f"❌ Could not save quiz: {e}")
         return None
 
-
 def render_lab_tabs(lab_choice, step_choice, uploaded=None):
     if "uploaded" not in st.session_state:
         st.session_state.uploaded = uploaded or {}
@@ -77,7 +76,6 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
         quiz_data = load_quiz_data(quiz_file)
         questions = quiz_data.get("questions", [])
 
-        # ✅ Save to /data if uploaded quiz provided
         if st.session_state.uploaded.get("quiz") and questions:
             save_quiz_to_data_folder(quiz_data, lab_choice, step_choice)
 
@@ -126,8 +124,11 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
             if st.session_state.uploaded.get("original")
             else get_filename("original", lab_choice, step_choice, "txt")
         )
-        solution = load_file_content(solution_file, "Solution not available.").splitlines()
-        original = load_file_content(original_file, "Original code not available.").splitlines()
+
+        solution_content = load_file_content(solution_file, "Solution not available.")
+        original_content = load_file_content(original_file, "Original code not available.")
+        solution = solution_content.splitlines()
+        original = original_content.splitlines()
 
         diff_lines = difflib.unified_diff(
             original,
