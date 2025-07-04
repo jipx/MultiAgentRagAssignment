@@ -1,0 +1,58 @@
+{
+  "user_id": "",
+  "timestamp": "20250704-202234",
+  "score": 3,
+  "total": 10,
+  "answers": {
+    "q1": {
+      "selected": "To encrypt logs",
+      "correct": "For secure logging",
+      "explanation": "The lab demonstrates how to apply secure logging practices in an Express.js application using Morgan."
+    },
+    "q2": {
+      "selected": "rotating-file-stream",
+      "correct": "rotating-file-stream",
+      "explanation": "The rotating-file-stream module is used to create a rotating log stream with a 12-hour interval."
+    },
+    "q3": {
+      "selected": "common",
+      "correct": "combined",
+      "explanation": "The lab instructions show that Morgan is initially applied using the 'combined' format: app.use(morgan('combined'));"
+    },
+    "q4": {
+      "selected": "Every 12 hours",
+      "correct": "Every 12 hours",
+      "explanation": "The rotating log stream is set up with a 12-hour interval: interval: '12h'."
+    },
+    "q5": {
+      "selected": "To compress logs",
+      "correct": "To log exceptions",
+      "explanation": "A custom token is created to log exceptions: morgan.token('exception', (req, res) => res.locals.errorMessage || '-');"
+    },
+    "q6": {
+      "selected": "method",
+      "correct": "user-agent",
+      "explanation": "The custom JSON format includes method, URL, IP, and exceptions, but not the user-agent."
+    },
+    "q7": {
+      "selected": "Overloading the server",
+      "correct": "Setting wrong database credentials",
+      "explanation": "To simulate an error, the lab instructions suggest editing databaseConfig.js and intentionally setting wrong credentials."
+    },
+    "q8": {
+      "selected": "In a 'log' folder",
+      "correct": "In a 'log' folder",
+      "explanation": "The lab sets up a 'log' directory to store the log files: const logDirectory = path.join(__dirname, '..', 'log');"
+    },
+    "q9": {
+      "selected": "error.log",
+      "correct": "log.txt",
+      "explanation": "The rotating log stream creates a file named 'log.txt': rfs.createStream('log.txt', {...});"
+    },
+    "q10": {
+      "selected": "Backing up logs to cloud storage",
+      "correct": "Avoiding exposure of sensitive information in logs",
+      "explanation": "The lab mentions under 'Learning Points' that exposing logs improperly may leak sensitive information, highlighting this security consideration."
+    }
+  }
+}
