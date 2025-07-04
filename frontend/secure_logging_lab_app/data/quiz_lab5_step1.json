@@ -1,64 +1,114 @@
 {
   "questions": [
     {
-      "question": "What is the primary purpose of using Morgan in this Express.js application?",
-      "choices": ["For database management", "For secure logging", "For user authentication", "For server-side rendering"],
-      "answer": "For secure logging",
-      "explanation": "The lab content demonstrates how to apply secure logging practices in an Express.js application using Morgan."
+      "question": "What is the primary purpose of using Morgan in this lab?",
+      "choices": [
+        "For database management",
+        "For logging",
+        "For authentication",
+        "For routing"
+      ],
+      "answer": "For logging",
+      "explanation": "Morgan is used in this lab for applying secure logging practices in an Express.js application."
     },
     {
       "question": "Which npm package is used to create a rotating log file?",
-      "choices": ["morgan", "fs", "path", "rotating-file-stream"],
+      "choices": [
+        "morgan",
+        "fs",
+        "rotating-file-stream",
+        "path"
+      ],
       "answer": "rotating-file-stream",
-      "explanation": "The rotating-file-stream package is used to create a rotating log stream with a 12-hour interval."
+      "explanation": "The rotating-file-stream package is used to create a new log file periodically, helping manage log size."
     },
     {
-      "question": "What is the default format used when applying Morgan middleware with app.use(morgan('combined'))?",
-      "choices": ["JSON format", "Apache-style log output", "Plain text", "XML format"],
-      "answer": "Apache-style log output",
-      "explanation": "The lab instructions mention that using morgan('combined') results in Apache-style log output in the console."
+      "question": "What is the interval set for rotating log files in this lab?",
+      "choices": [
+        "6 hours",
+        "12 hours",
+        "24 hours",
+        "48 hours"
+      ],
+      "answer": "12 hours",
+      "explanation": "The lab instructions specify setting up a rotating log stream with a 12-hour interval."
     },
     {
-      "question": "How often does the log file rotate in this lab setup?",
-      "choices": ["Every 6 hours", "Every 12 hours", "Every 24 hours", "Every week"],
-      "answer": "Every 12 hours",
-      "explanation": "The rotating log stream is set up with a 12-hour interval as specified in the code: interval: '12h'."
+      "question": "Which of the following is NOT a module imported for logging in this lab?",
+      "choices": [
+        "morgan",
+        "fs",
+        "path",
+        "express"
+      ],
+      "answer": "express",
+      "explanation": "While morgan, fs, and path are imported for logging purposes, express is not mentioned as being imported specifically for logging."
     },
     {
-      "question": "What is the purpose of creating a custom token named 'exception' in Morgan?",
-      "choices": ["To handle server crashes", "To log custom exception errors", "To create unique session IDs", "To validate user input"],
-      "answer": "To log custom exception errors",
-      "explanation": "The custom 'exception' token is created to log custom exception errors in a JSON format."
+      "question": "What format is used for the custom JSON logging?",
+      "choices": [
+        "combined",
+        "common",
+        "dev",
+        "jsonFormat"
+      ],
+      "answer": "jsonFormat",
+      "explanation": "The lab defines a custom 'jsonFormat' for logging that includes method, URL, IP, and exceptions."
     },
     {
-      "question": "In the custom JSON log format, which of the following is NOT included?",
-      "choices": ["method", "url", "ip", "user-agent"],
-      "answer": "user-agent",
-      "explanation": "The custom JSON format includes method, URL, IP, and exceptions, but not user-agent."
-    },
-    {
-      "question": "What action is taken to simulate an exception in the lab?",
-      "choices": ["Deleting a crucial file", "Setting wrong database credentials", "Overloading the server", "Injecting malicious code"],
-      "answer": "Setting wrong database credentials",
+      "question": "How is an exception simulated in the lab?",
+      "choices": [
+        "By throwing an error manually",
+        "By setting wrong database credentials",
+        "By sending an invalid request",
+        "By overloading the server"
+      ],
+      "answer": "By setting wrong database credentials",
       "explanation": "The lab instructs to edit databaseConfig.js and intentionally set wrong credentials to simulate an error."
     },
     {
-      "question": "Where are the log files stored in this project setup?",
-      "choices": ["In the root directory", "In a 'logs' folder", "In a 'log' folder", "In the 'src' directory"],
-      "answer": "In a 'log' folder",
-      "explanation": "The lab sets up a 'log' directory to store the log files: const logDirectory = path.join(__dirname, '..', 'log');"
+      "question": "What is the purpose of the custom token 'exception' created in the lab?",
+      "choices": [
+        "To encrypt log messages",
+        "To log custom exception errors",
+        "To timestamp log entries",
+        "To categorize log types"
+      ],
+      "answer": "To log custom exception errors",
+      "explanation": "The custom 'exception' token is created to include custom exception error messages in the log output."
     },
     {
-      "question": "What does res.locals.errorMessage = err.toString(); do in the route handling?",
-      "choices": ["Sends error message to the client", "Logs error to console", "Sets error message for custom logging", "Terminates the server"],
-      "answer": "Sets error message for custom logging",
-      "explanation": "This line sets the error message in res.locals.errorMessage, which is then used by the custom exception token for logging."
+      "question": "Where are the logs stored in this lab setup?",
+      "choices": [
+        "In memory",
+        "In a database",
+        "In a file named log.txt",
+        "In the cloud"
+      ],
+      "answer": "In a file named log.txt",
+      "explanation": "The lab sets up logging to a file named log.txt in a 'log' directory."
     },
     {
-      "question": "What is a potential security concern when implementing logging as described in this lab?",
-      "choices": ["Logs are not encrypted", "Logs are stored in memory", "Exposing logs improperly may leak sensitive information", "Logging slows down the server"],
-      "answer": "Exposing logs improperly may leak sensitive information",
-      "explanation": "The lab mentions under 'Learning Points' that understanding that exposing logs improperly may leak sensitive information is a security awareness point."
+      "question": "What does Morgan's 'combined' format provide?",
+      "choices": [
+        "JSON output",
+        "XML output",
+        "Apache-style log output",
+        "Binary output"
+      ],
+      "answer": "Apache-style log output",
+      "explanation": "The lab mentions that using Morgan's 'combined' format results in Apache-style log output in the console."
+    },
+    {
+      "question": "Which of the following is NOT included in the custom JSON log format?",
+      "choices": [
+        "exception",
+        "method",
+        "url",
+        "user-agent"
+      ],
+      "answer": "user-agent",
+      "explanation": "The custom JSON format defined in the lab includes exception, method, url, and ip, but not user-agent."
     }
   ]
 }
