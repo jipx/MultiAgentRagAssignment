@@ -2,63 +2,113 @@
   "questions": [
     {
       "question": "What is the primary purpose of using Morgan in this lab?",
-      "choices": ["For database management", "For user authentication", "For secure logging", "For route handling"],
-      "answer": "For secure logging",
-      "explanation": "The lab demonstrates how to apply secure logging practices in an Express.js application using Morgan."
+      "choices": [
+        "Database management",
+        "User authentication",
+        "Secure logging",
+        "Performance optimization"
+      ],
+      "answer": "Secure logging",
+      "explanation": "The lab demonstrates how to apply secure logging practices in an Express.js application using Morgan, which is a logging middleware."
     },
     {
-      "question": "Which npm package is used to create rotating log files?",
-      "choices": ["morgan", "fs", "path", "rotating-file-stream"],
+      "question": "Which module is used to create rotating log files?",
+      "choices": [
+        "fs",
+        "path",
+        "morgan",
+        "rotating-file-stream"
+      ],
       "answer": "rotating-file-stream",
-      "explanation": "The rotating-file-stream package is used to create a new log file periodically, helping manage log size."
+      "explanation": "The rotating-file-stream module is used to create a rotating log stream, which helps manage log size by creating new log files periodically."
     },
     {
-      "question": "What is the default logging format used when applying Morgan initially?",
-      "choices": ["dev", "combined", "common", "tiny"],
-      "answer": "combined",
-      "explanation": "The lab instructs to use app.use(morgan('combined')), which applies the 'combined' format for logging."
+      "question": "What is the purpose of creating a custom token in Morgan?",
+      "choices": [
+        "To encrypt log data",
+        "To log exceptions",
+        "To authenticate users",
+        "To compress log files"
+      ],
+      "answer": "To log exceptions",
+      "explanation": "A custom token is created to log exceptions, allowing for the inclusion of error messages in the log entries."
     },
     {
       "question": "How often are log files rotated in this lab setup?",
-      "choices": ["Every 6 hours", "Every 12 hours", "Every 24 hours", "Every week"],
+      "choices": [
+        "Every 6 hours",
+        "Every 12 hours",
+        "Every 24 hours",
+        "Every week"
+      ],
       "answer": "Every 12 hours",
-      "explanation": "The lab sets up a rotating log stream with a 12-hour interval using 'interval: '12h''."
+      "explanation": "The lab sets up a rotating log stream with a 12-hour interval using the configuration `interval: '12h'`."
     },
     {
-      "question": "What custom token is created for exception logging?",
-      "choices": ["error", "exception", "log", "customError"],
-      "answer": "exception",
-      "explanation": "The lab defines a custom token named 'exception' using morgan.token('exception', ...)."
+      "question": "What format is used for structuring log entries in this lab?",
+      "choices": [
+        "XML",
+        "CSV",
+        "JSON",
+        "Plain text"
+      ],
+      "answer": "JSON",
+      "explanation": "The lab defines a custom JSON format for log entries, which includes method, URL, IP, and exceptions."
     },
     {
       "question": "Which of the following is NOT included in the custom JSON log format?",
-      "choices": ["method", "url", "ip", "status code"],
-      "answer": "status code",
-      "explanation": "The custom JSON format includes method, URL, IP, and date, but not the status code."
+      "choices": [
+        "Exception",
+        "Method",
+        "URL",
+        "Response status code"
+      ],
+      "answer": "Response status code",
+      "explanation": "The custom JSON format includes exception, method, URL, IP, and date, but not the response status code."
     },
     {
-      "question": "How is an exception simulated in the lab?",
-      "choices": ["By creating a faulty route", "By setting wrong database credentials", "By overloading the server", "By intentionally crashing the application"],
-      "answer": "By setting wrong database credentials",
-      "explanation": "The lab instructs to edit databaseConfig.js and set an invalid user to simulate an error."
+      "question": "What is the purpose of setting 'res.locals.errorMessage' in the routes?",
+      "choices": [
+        "To display errors to users",
+        "To log exceptions",
+        "To handle database errors",
+        "To validate user input"
+      ],
+      "answer": "To log exceptions",
+      "explanation": "Setting 'res.locals.errorMessage' allows the custom Morgan token to capture and log exception messages."
     },
     {
-      "question": "Where are the log files stored in this project?",
-      "choices": ["In the root directory", "In a 'logs' folder", "In a 'log' folder", "In the 'src' directory"],
-      "answer": "In a 'log' folder",
-      "explanation": "The lab creates a 'log' directory to store the log files."
+      "question": "Which Node.js core modules are used in this lab for log directory management?",
+      "choices": [
+        "http and net",
+        "fs and path",
+        "crypto and os",
+        "stream and buffer"
+      ],
+      "answer": "fs and path",
+      "explanation": "The fs (File System) and path modules are used to manage the log directory and ensure it exists before writing logs."
     },
     {
-      "question": "What is the purpose of res.locals.errorMessage in the routes?",
-      "choices": ["To display errors to the user", "To set the HTTP status code", "To capture error messages for logging", "To trigger error handling middleware"],
-      "answer": "To capture error messages for logging",
-      "explanation": "res.locals.errorMessage is used to set the error message that will be included in the log entry."
+      "question": "What security consideration is mentioned regarding logging?",
+      "choices": [
+        "Encrypting log files",
+        "Using HTTPS for logging",
+        "Avoiding sensitive information in logs",
+        "Implementing log rotation"
+      ],
+      "answer": "Avoiding sensitive information in logs",
+      "explanation": "The lab mentions that exposing logs improperly may leak sensitive information, highlighting the importance of careful log management."
     },
     {
-      "question": "Which of the following is a key learning point from this lab?",
-      "choices": ["Database optimization", "Front-end development", "Security awareness in logging", "Load balancing"],
-      "answer": "Security awareness in logging",
-      "explanation": "One of the learning points mentioned is understanding that exposing logs improperly may leak sensitive information, which relates to security awareness in logging."
+      "question": "What should be done if Morgan is not logging as expected?",
+      "choices": [
+        "Reinstall Node.js",
+        "Change the log format",
+        "Apply Morgan middleware after body parser and before routes",
+        "Increase server memory"
+      ],
+      "answer": "Apply Morgan middleware after body parser and before routes",
+      "explanation": "The troubleshooting tips suggest ensuring that Morgan middleware is applied after the body parser and before the routes for proper logging."
     }
   ]
 }

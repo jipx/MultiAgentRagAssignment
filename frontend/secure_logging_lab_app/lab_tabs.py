@@ -34,6 +34,17 @@ def load_quiz_data(file_input):
         st.error(f"Failed to load quiz data: {e}")
         return {"questions": []}
 
+def save_quiz_to_data_folder(quiz_data, lab, step):
+    try:
+        filename = get_filename("quiz", lab, step, "json")
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump(quiz_data, f, indent=2, ensure_ascii=False)
+        st.success(f"✅ Quiz saved to: `{filename}`")
+        return filename
+    except Exception as e:
+        st.error(f"❌ Could not save quiz: {e}")
+        return None
+
 def render_lab_tabs(lab_choice, step_choice, uploaded=None):
     tabs = st.tabs(["Lab", "Hint", "Quiz", "Solution", "Lab Score"])
 
@@ -53,6 +64,10 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
         quiz_file = uploaded.get("quiz") if uploaded else get_filename("quiz", lab_choice, step_choice, "json")
         quiz_data = load_quiz_data(quiz_file)
         questions = quiz_data.get("questions", [])
+
+        # ✅ Automatically save uploaded quiz to data folder
+        if uploaded and uploaded.get("quiz") and questions:
+            save_quiz_to_data_folder(quiz_data, lab_choice, step_choice)
 
         if questions:
             if 'submitted_answers' not in st.session_state:
