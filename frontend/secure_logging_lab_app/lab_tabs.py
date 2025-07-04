@@ -3,6 +3,9 @@ import os
 import difflib
 import json
 from pathlib import Path
+from lab_hint_tab import render_lab_hint_tab  # Add at top
+
+from code_review_tab import render_code_review_tab  
 
 def get_filename(prefix, lab, step, ext):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
@@ -49,7 +52,7 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
     if "uploaded" not in st.session_state:
         st.session_state.uploaded = uploaded or {}
 
-    tabs = st.tabs(["Lab", "Hint", "Quiz", "Solution", "Lab Score"])
+    tabs = st.tabs(["Lab", "Hint", "Quiz", "Solution", "Lab Score","Code Review"])
 
     with tabs[0]:
         st.header("Lab Content")
@@ -61,10 +64,10 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
         lab_notes = load_file_content(lab_file, "Lab notes not found.")
         st.markdown(lab_notes)
 
-    with tabs[1]:
-        st.header("Hint")
-        st.write(f"Hints for **{lab_choice} - {step_choice}**")
-        st.text_area("Hint Details", height=150)
+    with tabs[1]:   
+        st.header("Lab Hint")
+        render_lab_hint_tab()
+        
 
     with tabs[2]:
         st.header("🧠 Quiz")
@@ -171,3 +174,6 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
             st.metric(label="Correct Answers", value=f"{correct} / {total}")
         else:
             st.info("Score will appear after quiz interaction.")
+
+    with tabs[5]:
+        render_code_review_tab()

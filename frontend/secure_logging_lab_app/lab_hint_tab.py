@@ -4,7 +4,7 @@ from utils import poll_for_answer
 
 ASK_URL = st.secrets["api"]["ask_url"]
 
-def render_tab(uploaded):
+def render_lab_hint_tab():
     st.subheader("🧠 LabHint Agent")
 
     user_id = st.text_input("👤 Student ID", value="student001", key="labhint_uid")

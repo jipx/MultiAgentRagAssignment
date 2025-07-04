@@ -4,7 +4,7 @@ from utils import poll_for_answer
 
 ASK_URL = st.secrets["api"]["ask_url"]
 
-def render_tab(uploaded):
+def render_code_review_tab():
     st.subheader("🔍 CodeReview Agent")
 
     user_id = st.text_input("👤 Student ID", value="student001", key="codereview_uid")
