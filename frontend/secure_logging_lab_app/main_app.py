@@ -42,6 +42,18 @@ lab_choice = col1.selectbox("Select Lab", ["Lab5", "Lab6", "Lab7"], key="lab_cho
 step_choice = col2.selectbox("Select Step", ["Step1", "Step2", "Step3"], key="step_choice")
 
 # -------------------------------
+# Sidebar: User ID (Required)
+# -------------------------------
+st.sidebar.header("👤 User")
+
+if "user_id_input" not in st.session_state:
+    st.session_state.user_id_input = "p1234567"
+
+st.sidebar.text_input("User ID", key="user_id_input", on_change=lambda: st.session_state.update({
+    "user_id": st.session_state.user_id_input.strip()
+}))
+
+# -------------------------------
 # Sidebar File Upload
 # -------------------------------
 st.sidebar.header("📄 Upload Lab Files")
@@ -56,6 +68,7 @@ for key in LAB_KEYS:
         st.session_state.uploaded[key] = file_path
         st.sidebar.success(f"{key.capitalize()} uploaded and saved to `data/`.")
 
+
 # -------------------------------
 # Show Uploaded File Status
 # -------------------------------
@@ -65,12 +78,6 @@ for key in LAB_KEYS:
     icon = "✅" if path and os.path.exists(path) else "❌"
     st.sidebar.markdown(f"- {icon} **{key}**: `{path or 'Not Found'}`")
 
-# -------------------------------
-# User ID
-# -------------------------------
-st.sidebar.text_input("👤 User ID", key="user_id_input", on_change=lambda: st.session_state.update({
-    "user_id": st.session_state.user_id_input
-}))
 
 # -------------------------------
 # Generate Quiz with API

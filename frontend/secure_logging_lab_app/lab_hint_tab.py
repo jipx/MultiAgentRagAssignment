@@ -1,5 +1,6 @@
 import streamlit as st
 import requests
+import json
 from datetime import datetime
 from utils import poll_for_answer
 
@@ -56,8 +57,23 @@ def render_lab_hint_tab():
             )
 
             st.subheader("🔎 Hint")
-            st.markdown(answer, unsafe_allow_html=True)
 
+            try:
+                raw_body = answer.get("answer", {}).get("body", "{}")
+                parsed_body = json.loads(raw_body)
+                hint_text = parsed_body.get("message", {}).get("answer", {}).get("hint", "")
+
+                if hint_text:
+                    st.success("💡 Hint:")
+                    st.markdown(f"> {hint_text}")
+                else:
+                    st.warning("⚠️ No hint found in response.")
+
+            except Exception as e:
+                st.error(f"❌ Failed to parse hint: {e}")
+                st.code(str(answer), language="json")
+
+            # Save to history
             if "labhint_history" not in st.session_state:
                 st.session_state.labhint_history = []
 
@@ -65,7 +81,7 @@ def render_lab_hint_tab():
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "task": task_question,
                 "notes": labnotes,
-                "hint": answer
+                "hint": hint_text
             })
 
         except Exception as e:
@@ -79,7 +95,7 @@ def render_lab_hint_tab():
                 if entry["notes"]:
                     st.markdown(f"**Context:**\n```text\n{entry['notes']}\n```")
                 st.markdown("**Hint:**")
-                st.markdown(entry["hint"], unsafe_allow_html=True)
+                st.markdown(f"> {entry['hint']}", unsafe_allow_html=True)
                 st.markdown("---")
             if st.button("🗑️ Clear Hint History"):
                 st.session_state.labhint_history.clear()
