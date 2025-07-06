@@ -2,8 +2,6 @@ import json
 import boto3
 import os
 import traceback
-import re
-import ast
 
 bedrock = boto3.client("bedrock-runtime")
 
@@ -27,38 +25,27 @@ Example 2:
 
 def handle_sc_labquiz_gen(question: str, topic: str = "Secure Coding Lab", agent: str = "sc-labquiz-gen") -> dict:
     try:
-        # Prompt with explicit JSON format and strict structure
         prompt = f"""You are a secure coding lab assistant.
+Generate 10 multiple-choice questions in JSON format based on the provided lab content. Use the same structure as the few-shot examples.
 
-Generate exactly 10 multiple-choice questions in **valid JSON format** based on the provided lab notes.
-
-Each question must follow this structure:
-
-{{
-  "question": "What is ...?",
-  "choices": ["Option A", "Option B", "Option C", "Option D"],
-  "answer": "Option A",
-  "explanation": "Explanation of why this answer is correct."
-}}
-
-Return the final result as a JSON object:
-
-{{
-  "questions": [
-    // 10 questions like above
-  ]
-}}
-
-Only return the valid JSON. Do **not** include markdown formatting, explanations, comments, or extra text.
-
-Here are a few-shot examples:
 {FEW_SHOT_EXAMPLES}
 
-Lab notes:
+Now generate questions based on this lab content:
 \"\"\"{question}\"\"\"
-"""
 
-        # Claude 3 Messages API call
+Return format:
+{{
+  "questions": [
+    {{
+      "question": "...",
+      "choices": ["A", "B", "C", "D"],
+      "answer": "A",
+      "explanation": "..."
+    }},
+    ...
+  ]
+}}"""
+
         response = bedrock.invoke_model(
             modelId=os.environ.get("MODEL_ID", "anthropic.claude-3-5-sonnet-20240620"),
             body=json.dumps({
@@ -76,39 +63,18 @@ Lab notes:
             contentType="application/json"
         )
 
-        # Parse the Claude response body
         raw_body = response["body"].read().decode("utf-8")
         print("📦 Raw Bedrock Output:", raw_body)
 
+        # Claude 3 returns `content` array
         completion_text = json.loads(raw_body).get("content", [{}])[0].get("text", "{}")
 
-        # Auto-remove markdown code block if present (e.g., ```json\n{...}\n```)
-        if completion_text.startswith("```"):
-            completion_text = re.sub(r"^```(?:json)?\s*", "", completion_text)
-            completion_text = re.sub(r"\s*```$", "", completion_text)
-
-        # Try to extract top-level JSON block
-        match = re.search(r'\{[\s\S]*\}', completion_text)
-        if not match:
-            raise RuntimeError("❌ No JSON object found in model response.")
-
-        json_str = match.group()
-
-        # Normalize smart quotes
-        json_str = json_str.replace("“", '"').replace("”", '"').replace("‘", "'").replace("’", "'")
-
-        # Parse JSON safely
         try:
-            questions_json = json.loads(json_str)
-        except json.JSONDecodeError:
-            print("⚠️ JSON parsing failed. Trying ast.literal_eval as fallback...")
-            try:
-                repaired = ast.literal_eval(json_str)
-                questions_json = json.loads(json.dumps(repaired))  # Normalize to proper JSON
-            except Exception as fallback_error:
-                print("❌ Fallback also failed. Final raw response:")
-                print(completion_text)
-                raise RuntimeError("Model returned malformed JSON.")
+            questions_json = json.loads(completion_text)
+        except json.JSONDecodeError as je:
+            print("⚠️ Failed to parse model output:")
+            print(completion_text)
+            raise RuntimeError("Model returned malformed JSON.") from je
 
         return {
             "statusCode": 200,

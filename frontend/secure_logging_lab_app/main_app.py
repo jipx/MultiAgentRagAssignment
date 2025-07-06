@@ -117,26 +117,28 @@ if st.sidebar.button("🧠 Generate Quiz"):
                         debug_sidebar=st.sidebar
                     )
 
-                    raw_text = result.get("answer", [{}])[0].get("text", "")
-                    json_text = raw_text[raw_text.find("{"):] if "{" in raw_text else raw_text
-
-                    # Save quiz to file
-                    quiz_file = get_filename("quiz", lab_choice, step_choice, "json")
-                    with open(quiz_file, "w", encoding="utf-8") as f:
-                        f.write(json_text)
-                    st.session_state.uploaded["quiz"] = quiz_file
-                    st.success("✅ Quiz generated and saved.")
-
+                    # ✅ NEW: Parse double-encoded 'body' field from result
                     try:
-                        quiz_data = json.loads(json_text)
+                        raw_body = result.get("answer", {}).get("body", "{}")
+                        parsed_body = json.loads(raw_body)
+                        quiz_data = parsed_body.get("questions", [])
+
+                        # Save to file
+                        quiz_file = get_filename("quiz", lab_choice, step_choice, "json")
+                        with open(quiz_file, "w", encoding="utf-8") as f:
+                            f.write(json.dumps({"questions": quiz_data}, indent=2))
+                        st.session_state.uploaded["quiz"] = quiz_file
+                        st.success("✅ Quiz generated and saved.")
+
+                        # Display questions
                         st.subheader("🧠 Generated Quiz Questions")
-                        for idx, q in enumerate(quiz_data.get("questions", []), 1):
-                            with st.expander(f"Q{idx}: {q['question']}"):
+                        with st.expander("📋 All Quiz Questions", expanded=False):
+                            for idx, q in enumerate(quiz_data, 1):
                                 st.markdown("**Choices:**")
                                 for choice in q["choices"]:
                                     st.markdown(f"- {choice}")
-                                st.markdown(f"**✅ Answer:** `{q['answer']}`")
-                                st.markdown(f"**💡 Explanation:** {q['explanation']}")
+                                    st.markdown(f"**✅ Answer:** `{q['answer']}`")
+                                    st.markdown(f"**💡 Explanation:** {q['explanation']}")
                     except Exception as e:
                         st.error(f"⚠️ Failed to parse or display quiz: {e}")
 

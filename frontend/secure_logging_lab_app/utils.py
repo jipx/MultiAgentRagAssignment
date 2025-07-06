@@ -39,6 +39,7 @@ def poll_for_answer(get_url, request_id, max_attempts=10, delay_sec=3, debug_sid
     Returns:
         dict: Parsed response JSON or empty dict if failed.
     """
+    max_attempts= 50
     for attempt in range(max_attempts):
         time.sleep(delay_sec)
         try:

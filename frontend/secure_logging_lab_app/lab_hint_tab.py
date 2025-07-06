@@ -50,7 +50,7 @@ def render_lab_hint_tab():
             answer = poll_for_answer(
                 GET_URL,
                 request_id,
-                max_attempts=10,
+                max_attempts=15,
                 delay_sec=3,
                 debug_sidebar=st.sidebar
             )
