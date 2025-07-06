@@ -60,3 +60,39 @@ def poll_for_answer(get_url, request_id, max_attempts=10, delay_sec=3, debug_sid
             if debug_sidebar:
                 debug_sidebar.error(f"❌ Polling error: {e}")
     return {}
+
+
+
+
+import json
+
+def extract_codereview_feedback(raw_answer) -> str:
+    """
+    Handles Claude response from the get-answer API, extracting content safely whether it's
+    a raw JSON string or a parsed dictionary.
+    """
+    try:
+        # If input is a string, try parsing it
+        if isinstance(raw_answer, str):
+            parsed = json.loads(raw_answer)
+        elif isinstance(raw_answer, dict):
+            parsed = raw_answer
+        else:
+            return "⚠️ Unsupported answer format."
+
+        # Claude response may be nested under "answer"
+        if "answer" in parsed and isinstance(parsed["answer"], str):
+            parsed = json.loads(parsed["answer"])  # second-level parse
+
+        # Now extract content blocks
+        content_blocks = parsed.get("content", [])
+        feedback = ""
+
+        for block in content_blocks:
+            if block.get("type") == "text":
+                feedback += block["text"] + "\n"
+
+        return feedback.strip()
+
+    except Exception as e:
+        return f"❌ Error parsing response: {str(e)}\n\nRaw:\n{raw_answer}"

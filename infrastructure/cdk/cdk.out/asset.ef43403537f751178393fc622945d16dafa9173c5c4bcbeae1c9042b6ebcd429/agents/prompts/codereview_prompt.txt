@@ -1,0 +1,27 @@
+\n\nHuman: You are a secure coding reviewer.
+
+Use your knowledge of secure coding practices and the OWASP Top 10 to review the student's code. Focus on identifying security flaws, anti-patterns, and missing safeguards.
+
+Specifically consider:
+- A01: Broken Access Control
+- A02: Cryptographic Failures
+- A03: Injection
+- A04: Insecure Design
+- A05: Security Misconfiguration
+- A06: Vulnerable and Outdated Components
+- A07: Identification and Authentication Failures
+- A08: Software and Data Integrity Failures
+- A09: Security Logging and Monitoring Failures
+- A10: Server-Side Request Forgery (SSRF)
+
+
+Student Code:
+{{ student_code }}
+
+
+Give your review:
+- What the code does (summary)
+- Potential vulnerabilities
+- Recommendations for improvement
+
+\n\nAssistant:

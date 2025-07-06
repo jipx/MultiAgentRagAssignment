@@ -64,6 +64,9 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
         lab_notes = load_file_content(lab_file, "Lab notes not found.")
         st.markdown(lab_notes)
 
+          # ✅ Store in session state for reuse (e.g. LabHint tab)
+        st.session_state.labnotes = lab_notes
+
     with tabs[1]:   
         st.header("Lab Hint")
         render_lab_hint_tab()
