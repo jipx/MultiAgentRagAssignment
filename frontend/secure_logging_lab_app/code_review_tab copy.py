@@ -1,32 +1,62 @@
 import streamlit as st
 import requests
 from datetime import datetime
-from utils import poll_for_answer
-from utils import extract_codereview_feedback
+from utils import poll_for_answer, extract_codereview_feedback
 
 ASK_URL = st.secrets["api"]["ask_url"]
 GET_URL = st.secrets["api"]["get_answer_url"]
-
 
 def render_code_review_tab():
     st.subheader("🔍 CodeReview Agent")
 
     user_id = st.text_input("👤 Student ID", value="student001", key="codereview_uid")
-    selected_title = st.selectbox("📚 Choose a code scenario", [
-        "Select one...",
-        "1. Basic SQL Injection (A03)",
-        "2. Insecure JWT Verification (A07)",
-        "3. Missing HTTPS Headers (A05)",
-        "4. SSRF via URL Fetch (A10)"
-    ], key="codereview_title")
 
     examples = {
-        "1. Basic SQL Injection (A03)": "app.get('/user/:id', (req, res) => {\n  const userId = req.params.id;\n  db.query(`SELECT * FROM users WHERE id = ${userId}`);\n});",
-        "2. Insecure JWT Verification (A07)": "const decoded = jwt.decode(token);\nif (decoded.role === 'admin') {\n  grantAccess();\n}",
-        "3. Missing HTTPS Headers (A05)": "res.send('Welcome');",
-        "4. SSRF via URL Fetch (A10)": "app.get('/proxy', (req, res) => {\n  const target = req.query.url;\n  axios.get(target).then(r => res.send(r.data));\n});"
-    }
+    # A01: Broken Access Control
+    "A01 - Unchecked Admin Role": """if (req.query.role === 'admin') {\n  grantAdminAccess();\n}""",
 
+    # A02: Cryptographic Failures
+    "A02 - Plaintext Password": """app.post('/login', (req, res) => {\n  if (req.body.password === 'letmein') {\n    res.send('Welcome');\n  }\n});""",
+
+    # A03: Injection — SQL Injection
+    "A03 - SQL Injection": """app.get('/user/:id', (req, res) => {\n  const id = req.params.id;\n  db.query(`SELECT * FROM users WHERE id = ${id}`);\n});""",
+
+    # A03: Injection — Reflected XSS
+    "A03 - Reflected XSS": """app.get('/search', (req, res) => {\n  const q = req.query.q;\n  res.send(`Results for ${q}`);\n});""",
+
+    # A03: Injection — XSS with no validation
+    "A03 - XSS No Validation": """const userInput = req.body.comment;\nres.send(`<div>${userInput}</div>`);""",
+
+    # A03: Injection — XSS with insecure regex
+    "A03 - XSS with Bad Regex": """const input = req.body.name;\nif (!/<script>/i.test(input)) {\n  res.send(input);\n}""",
+
+    # A03: Injection — Secure Regex (Whitelist)
+    "A03 - Secure XSS Prevention (Whitelist)": """const input = req.body.name;\nif (/^[a-zA-Z0-9 ]+$/.test(input)) {\n  res.send(input);\n} else {\n  res.status(400).send('Invalid input');\n}""",
+
+    # A04: Insecure Design
+    "A04 - Missing Rate Limit": """app.post('/reset-password', (req, res) => {\n  resetPassword(req.body.email);\n});""",
+
+    # A05: Security Misconfiguration
+    "A05 - Missing CSP Header": """app.use((req, res, next) => {\n  res.send('Hello');\n});""",
+
+    # A06: Vulnerable Components
+    "A06 - Outdated jQuery": """<script src="https://code.jquery.com/jquery-1.7.2.min.js"></script>""",
+
+    # A07: Identification & Auth Failures
+    "A07 - Insecure JWT Decode": """const decoded = jwt.decode(token);\nif (decoded.admin) { grantAccess(); }""",
+
+    # A08: Software & Data Integrity Failures
+    "A08 - Unsigned Update Script": """<script src="http://example.com/auto-update.js"></script>""",
+
+    # A09: Security Logging & Monitoring Failures
+    "A09 - No Logging on Login Fail": """if (!isValidPassword(user, pass)) {\n  res.send('Try again');\n}""",
+
+    # A10: SSRF
+    "A10 - Unrestricted URL Fetch": """app.get('/proxy', (req, res) => {\n  const url = req.query.url;\n  axios.get(url).then(resp => res.send(resp.data));\n});"""
+}
+
+
+    selected_title = st.selectbox("📚 Choose a vulnerable code example", ["Select one..."] + list(examples.keys()), key="codereview_title")
     default_code = examples.get(selected_title, "")
     student_code = st.text_area("💻 Paste your code here", value=default_code, height=300, key="codereview_code")
 
@@ -43,7 +73,8 @@ def render_code_review_tab():
         try:
             res = requests.post(ASK_URL, json=payload)
             ask_data = res.json()
-            st.subheader("📥 Raw API Response")
+
+            st.subheader("📥 Raw Ask API Response")
             st.json(ask_data)
 
             if res.status_code != 200:
@@ -56,25 +87,16 @@ def render_code_review_tab():
                 return
 
             st.session_state.request_id = request_id
-            answer = poll_for_answer(
-                GET_URL,
-                request_id,
-                max_attempts=10,
-                delay_sec=3,
-                debug_sidebar=st.sidebar
-            )
+            answer = poll_for_answer(GET_URL, request_id, max_attempts=10, delay_sec=3, debug_sidebar=st.sidebar)
 
-          
-            # Show full raw JSON from the answer API
             st.subheader("📄 Raw Get Answer Response")
             st.json(answer)
 
-            # Assume `answer_raw` is the .json()['answer'] value from API response (as a string)
             formatted_feedback = extract_codereview_feedback(answer)
-            st.markdown("### 🔎 Review Feedback")
-            st.markdown(formatted_feedback)
 
-            # Save history
+            st.markdown("### 🔎 Review Feedback")
+            st.markdown(formatted_feedback, unsafe_allow_html=True)
+
             if "history" not in st.session_state:
                 st.session_state.history = []
 
@@ -93,7 +115,7 @@ def render_code_review_tab():
             for entry in reversed(st.session_state.history):
                 st.markdown(f"### 📌 {entry['title']} — {entry['timestamp']}")
                 st.code(entry["code"], language="javascript")
-                st.markdown(f"**🔎 Feedback:**\n\n{entry['feedback']}")
+                st.markdown(entry["feedback"], unsafe_allow_html=True)
                 st.markdown("---")
             if st.button("🗑️ Clear History"):
                 st.session_state.history.clear()
