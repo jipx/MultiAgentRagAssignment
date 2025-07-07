@@ -1,0 +1,42 @@
+[
+  {
+    "user_id": "student001",
+    "title": "Custom Submission",
+    "code": "var validator=require('validator');\nfunction validateRegistration(req,res,next){\nvar username=req.body.username;\nvar email=req.body.email;\nvar role=req.body.role;\nvar password=req.body.password;\nif (validator.isAlphanumeric(username) && validator.isEmail(email) && (role=='user' ||\nrole=='admin') && validator.isAlphanumeric(password) && password.length>7){\nnext();\n}\nelse{\nres.send(`{\"Message\":\"Validation Failed\"}`);\n}\n}\nmodule.exports.validateRegistration=validateRegistration",
+    "comment": "role should be obtained from req.body",
+    "timestamp": "2025-07-07T02:03:06.591174",
+    "votes": 0
+  },
+  {
+    "user_id": "student001",
+    "title": "Custom Submission",
+    "code": "var validator=require('validator');\nfunction validateRegistration(req,res,next){\nvar username=req.body.username;\nvar email=req.body.email;\nvar role=req.body.role;\nvar password=req.body.password;\nif (validator.isAlphanumeric(username) && validator.isEmail(email) && (role=='user' ||\nrole=='admin') && validator.isAlphanumeric(password) && password.length>7){\nnext();\n}\nelse{\nres.send(`{\"Message\":\"Validation Failed\"}`);\n}\n}\nmodule.exports.validateRegistration=validateRegistration",
+    "comment": "role should be obtained from req.body",
+    "timestamp": "2025-07-07T02:03:36.059984",
+    "votes": 0
+  },
+  {
+    "user_id": "student001",
+    "title": "Custom Submission",
+    "code": "var validator=require('validator');\nfunction validateRegistration(req,res,next){\nvar username=req.body.username;\nvar email=req.body.email;\nvar role=req.body.role;\nvar password=req.body.password;\nif (validator.isAlphanumeric(username) && validator.isEmail(email) && (role=='user' ||\nrole=='admin') && validator.isAlphanumeric(password) && password.length>7){\nnext();\n}\nelse{\nres.send(`{\"Message\":\"Validation Failed\"}`);\n}\n}\nmodule.exports.validateRegistration=validateRegistration",
+    "comment": "role should be obtained from req.body",
+    "timestamp": "2025-07-07T02:05:05.445399",
+    "votes": 0
+  },
+  {
+    "user_id": "student001",
+    "title": "Custom Submission",
+    "code": "var validator=require('validator');\nfunction validateRegistration(req,res,next){\nvar username=req.body.username;\nvar email=req.body.email;\nvar role=req.body.role;\nvar password=req.body.password;\nif (validator.isAlphanumeric(username) && validator.isEmail(email) && (role=='user' ||\nrole=='admin') && validator.isAlphanumeric(password) && password.length>7){\nnext();\n}\nelse{\nres.send(`{\"Message\":\"Validation Failed\"}`);\n}\n}\nmodule.exports.validateRegistration=validateRegistration",
+    "comment": "role should be obtained from req.body",
+    "timestamp": "2025-07-07T02:05:11.987395",
+    "votes": 0
+  },
+  {
+    "user_id": "student001",
+    "title": "Custom Submission",
+    "code": "var validator=require('validator');\nfunction validateRegistration(req,res,next){\nvar username=req.body.username;\nvar email=req.body.email;\nvar role=req.body.role;\nvar password=req.body.password;\nif (validator.isAlphanumeric(username) && validator.isEmail(email) && (role=='user' ||\nrole=='admin') && validator.isAlphanumeric(password) && password.length>7){\nnext();\n}\nelse{\nres.send(`{\"Message\":\"Validation Failed\"}`);\n}\n}\nmodule.exports.validateRegistration=validateRegistration",
+    "comment": "role should be obtained from req.body",
+    "timestamp": "2025-07-07T02:05:55.801666",
+    "votes": 0
+  }
+]

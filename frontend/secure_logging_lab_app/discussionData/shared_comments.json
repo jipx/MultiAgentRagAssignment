@@ -1,0 +1,41 @@
+[
+  {
+    "user_id": "student001",
+    "title": "A03 - Reflected XSS",
+    "code": "app.get('/search', (req, res) => {\n  const q = req.query.q;\n  res.send(`Results for ${q}`);\n});",
+    "comment": "need to validate the input",
+    "timestamp": "2025-07-07T02:13:26.706099",
+    "votes": 3
+  },
+  {
+    "user_id": "student001",
+    "title": "A01 - Unchecked Admin Role",
+    "code": "if (req.query.role === 'admin') {\n  grantAdminAccess();\n}",
+    "comment": "it should not trust the roe from query string",
+    "timestamp": "2025-07-07T02:15:49.445580",
+    "votes": 1,
+    "voters": [
+      "student001"
+    ]
+  },
+  {
+    "user_id": "student001",
+    "title": "A03 - XSS with Bad Regex",
+    "code": "const input = req.body.name;\nif (!/<script>/i.test(input)) {\n  res.send(input);\n}",
+    "comment": "use input validation regex",
+    "timestamp": "2025-07-07T02:20:58.885466",
+    "votes": 1,
+    "voters": [
+      "student001"
+    ]
+  },
+  {
+    "user_id": "student001",
+    "title": "A03 - XSS with Bad Regex",
+    "code": "const input = req.body.name;\nif (!/<script>/i.test(input)) {\n  res.send(input);\n}",
+    "comment": "Implement logging for all user inputs and potential security events:",
+    "timestamp": "2025-07-07T02:22:58.013067",
+    "votes": 0,
+    "voters": []
+  }
+]
