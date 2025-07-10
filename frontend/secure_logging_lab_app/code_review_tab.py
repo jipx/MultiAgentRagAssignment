@@ -1,100 +1,139 @@
-import os
 import json
 import requests
 import streamlit as st
-import pandas as pd
 from datetime import datetime
-import io
+from collections import defaultdict
 from utils import poll_for_answer, extract_codereview_feedback
 
-# ✅ Ensure 'discussionData/' folder exists
-os.makedirs("discussionData", exist_ok=True)
-
-# ✅ Shared comments file inside the folder
-COMMENTS_FILE = "discussionData/shared_comments.json"
-
-# ✅ API URLs from Streamlit secrets
+# --- API Endpoints ---
+API_URL = st.secrets["api"]["codereview_presign_api"]
 ASK_URL = st.secrets["api"]["ask_url"]
-GET_URL = st.secrets["api"]["get_answer_url"]
+ANSWER_URL = st.secrets["api"]["get_answer_url"]
 
-# --------------------- Shared Comment Handling --------------------- #
-def load_shared_comments():
-    if os.path.exists(COMMENTS_FILE):
-        with open(COMMENTS_FILE, "r") as f:
-            return json.load(f)
-    return []
-
-def save_shared_comments(comments):
-    with open(COMMENTS_FILE, "w") as f:
-        json.dump(comments, f, indent=2)
+# --- In-memory Comment Store ---
+COMMENTS_DB = {}
 
 def add_comment(user_id, title, code, comment_text):
-    comments = load_shared_comments()
-    comments.append({
+    timestamp = datetime.now().isoformat()
+    COMMENTS_DB.setdefault(title, []).append({
         "user_id": user_id,
-        "title": title,
+        "timestamp": timestamp,
         "code": code,
         "comment": comment_text,
-        "timestamp": datetime.utcnow().isoformat(),
         "votes": 0,
         "voters": []
     })
-    save_shared_comments(comments)
 
-def upvote_comment(timestamp, user_id):
-    comments = load_shared_comments()
-    for c in comments:
-        if c["timestamp"] == timestamp:
-            if user_id not in c.get("voters", []):
-                c["votes"] += 1
-                c.setdefault("voters", []).append(user_id)
-            break
-    save_shared_comments(comments)
+def load_shared_comments():
+    return [
+        {**comment, "title": title}
+        for title, comment_list in COMMENTS_DB.items()
+        for comment in comment_list
+    ]
 
-# ---------------------- Main Code Review Tab ---------------------- #
+def upvote_comment(timestamp, voter_id):
+    for comment_list in COMMENTS_DB.values():
+        for comment in comment_list:
+            if comment["timestamp"] == timestamp and voter_id not in comment["voters"]:
+                comment["votes"] += 1
+                comment["voters"].append(voter_id)
+
+# --- OWASP Category Descriptions ---
+CATEGORY_DESCRIPTIONS = {
+    "A01": "Broken Access Control",
+    "A02": "Cryptographic Failures",
+    "A03": "Injection",
+    "A04": "Insecure Design",
+    "A05": "Security Misconfiguration",
+    "A06": "Vulnerable and Outdated Components",
+    "A07": "Identification and Authentication Failures",
+    "A08": "Software and Data Integrity Failures",
+    "A09": "Security Logging and Monitoring Failures",
+    "A10": "Server-Side Request Forgery (SSRF)"
+}
+
+@st.cache_data
+def fetch_all_examples_grouped():
+    all_filenames = [f"examples/A0{i}.json" for i in range(1, 10)] + ["examples/A10.json"]
+    grouped = defaultdict(list)
+
+    for filename in all_filenames:
+        payload = {"action": "get", "filename": filename}
+        res = requests.post(API_URL, json=payload)
+
+        if res.status_code == 200:
+            try:
+                url_data = res.json()
+                presigned_url = url_data.get("url")
+                if presigned_url:
+                    s3_res = requests.get(presigned_url)
+                    s3_res.raise_for_status()
+                    examples = s3_res.json()
+                    for ex in examples:
+                        cat = ex.get("category", "Unknown")
+                        grouped[cat].append(ex)
+            except Exception as e:
+                st.warning(f"Error parsing {filename}: {e}")
+                continue
+    return grouped
+
 def render_code_review_tab():
-    st.subheader("🔍 CodeReview Agent")
+    st.subheader("🔍 Code Review Agent")
 
     user_id = st.text_input("👤 Student ID", value="student001", key="codereview_uid")
 
-    examples = {
-        "A01 - Unchecked Admin Role": """if (req.query.role === 'admin') {\n  grantAdminAccess();\n}""",
-        "A02 - Plaintext Password": """app.post('/login', (req, res) => {\n  if (req.body.password === 'letmein') {\n    res.send('Welcome');\n  }\n});""",
-        "A03 - SQL Injection": """app.get('/user/:id', (req, res) => {\n  const id = req.params.id;\n  db.query(`SELECT * FROM users WHERE id = ${id}`);\n});""",
-        "A03 - Reflected XSS": """app.get('/search', (req, res) => {\n  const q = req.query.q;\n  res.send(`Results for ${q}`);\n});""",
-        "A03 - XSS No Validation": """const userInput = req.body.comment;\nres.send(`<div>${userInput}</div>`);""",
-        "A03 - XSS with Bad Regex": """const input = req.body.name;\nif (!/<script>/i.test(input)) {\n  res.send(input);\n}""",
-        "A03 - Secure XSS Prevention (Whitelist)": """const input = req.body.name;\nif (/^[a-zA-Z0-9 ]+$/.test(input)) {\n  res.send(input);\n} else {\n  res.status(400).send('Invalid input');\n}""",
-        "A04 - Missing Rate Limit": """app.post('/reset-password', (req, res) => {\n  resetPassword(req.body.email);\n});""",
-        "A05 - Missing CSP Header": """app.use((req, res, next) => {\n  res.send('Hello');\n});""",
-        "A06 - Outdated jQuery": """<script src=\"https://code.jquery.com/jquery-1.7.2.min.js\"></script>""",
-        "A07 - Insecure JWT Decode": """const decoded = jwt.decode(token);\nif (decoded.admin) { grantAccess(); }""",
-        "A08 - Unsigned Update Script": """<script src=\"http://example.com/auto-update.js\"></script>""",
-        "A09 - No Logging on Login Fail": """if (!isValidPassword(user, pass)) {\n  res.send('Try again');\n}""",
-        "A10 - Unrestricted URL Fetch": """app.get('/proxy', (req, res) => {\n  const url = req.query.url;\n  axios.get(url).then(resp => res.send(resp.data));\n});"""
-    }
+    # Load grouped examples
+    grouped_examples = fetch_all_examples_grouped()
+    categories = sorted(grouped_examples.keys())
 
-    selected_title = st.selectbox("📚 Choose a vulnerable code example", ["Select one..."] + list(examples.keys()), key="codereview_title")
-    default_code = examples.get(selected_title, "")
-    student_code = st.text_area("💻 Paste your code here", value=default_code, height=300, key="codereview_code")
+    # Create labels with descriptions
+    category_labels = [f"{cat} – {CATEGORY_DESCRIPTIONS.get(cat, '')}" for cat in categories]
+    label_to_cat = dict(zip(category_labels, categories))
 
-    discussion_comment = st.text_area("💬 Optional Comments for Discussion", placeholder="Write your questions or observations here...")
+    selected_label = st.radio("📂 Choose OWASP Category", category_labels, horizontal=True)
+    selected_category = label_to_cat[selected_label]
 
-    current_title = selected_title if selected_title != "Select one..." else "Custom Submission"
+    # Get examples in the selected category
+    examples = grouped_examples[selected_category]
+    option_labels = [f"{ex['example_id']} – {ex['title']}" for ex in examples]
+    selected_label = st.selectbox(f"📚 Select Example from {selected_category}", ["Select one..."] + option_labels)
 
-    if st.button("📂 Submit Comment Only", key="submit_comment"):
+    if selected_label != "Select one...":
+        selected_example = next(
+            (ex for ex in examples if f"{ex['example_id']} – {ex['title']}" == selected_label),
+            None
+        )
+        if selected_example:
+            default_code = selected_example["code"]
+            current_title = selected_example["title"]
+            example_id = selected_example["example_id"]
+        else:
+            default_code = ""
+            current_title = "Custom Submission"
+            example_id = None
+    else:
+        default_code = ""
+        current_title = "Custom Submission"
+        example_id = None
+
+    student_code = st.text_area("💻 Paste your code here", value=default_code, height=300)
+    discussion_comment = st.text_area("💬 Comment or question", placeholder="Why is this vulnerable?")
+
+    # Submit comment only
+    if st.button("📂 Submit Comment Only"):
         if not student_code.strip():
-            st.warning("⚠️ Please enter or paste some code first.")
+            st.warning("⚠️ Paste some code first.")
         elif not discussion_comment.strip():
-            st.warning("⚠️ Please write a comment.")
+            st.warning("⚠️ Please enter a comment.")
         else:
             add_comment(user_id, current_title, student_code, discussion_comment)
-            st.success("✅ Comment submitted to the discussion board.")
+            st.success("✅ Comment submitted.")
             st.rerun()
 
-    if st.button("🧠 Submit for Code Review", key="codereview_btn"):
+    # Submit for code review
+    if st.button("🧠 Submit for Code Review"):
         if not student_code.strip():
-            st.warning("⚠️ Please enter or paste some code for review.")
+            st.warning("⚠️ Paste some code to review.")
             return
 
         payload = {
@@ -103,79 +142,51 @@ def render_code_review_tab():
             "question": student_code
         }
 
-        st.subheader("📤 Raw API Request Payload")
-        st.json({**payload, "discussion_comment": discussion_comment})
-
         try:
-            with st.spinner("Submitting for review..."):
+            with st.spinner("Submitting..."):
                 res = requests.post(ASK_URL, json=payload)
                 ask_data = res.json()
 
-            st.subheader("📥 Raw Ask API Response")
-            st.json(ask_data)
-
-            if res.status_code != 200:
-                st.error(f"❌ Ask API error: {res.status_code}")
-                return
-
             request_id = ask_data.get("message", {}).get("request_id")
             if not request_id:
-                st.error("❌ Failed to get request ID from response.")
+                st.error("❌ No request ID.")
                 return
 
-            with st.spinner("🕒 Waiting for feedback..."):
-                st.session_state.request_id = request_id
-                answer = poll_for_answer(GET_URL, request_id, max_attempts=10, delay_sec=3, debug_sidebar=st.sidebar)
+            with st.spinner("Awaiting feedback..."):
+                answer = poll_for_answer(ANSWER_URL, request_id, max_attempts=10, delay_sec=3)
 
-            st.subheader("📄 Raw Get Answer Response")
-            st.json(answer)
+            feedback = extract_codereview_feedback(answer)
+            st.markdown("### 🧾 Feedback")
+            st.markdown(feedback, unsafe_allow_html=True)
 
-            formatted_feedback = extract_codereview_feedback(answer)
-
-            st.markdown("### 🔎 Review Feedback")
-            st.markdown(formatted_feedback, unsafe_allow_html=True)
-
-            if "history" not in st.session_state:
-                st.session_state.history = []
-
-            st.session_state.history.append({
+            st.session_state.setdefault("history", []).append({
                 "title": current_title,
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                 "code": student_code,
-                "feedback": formatted_feedback,
+                "feedback": feedback,
                 "comment": discussion_comment
             })
 
         except Exception as e:
-            st.error(f"❌ Exception occurred: {str(e)}")
+            st.error(f"❌ Error: {e}")
 
+    # Review History
     with st.expander("🗂️ Review History", expanded=False):
-        if "history" in st.session_state and st.session_state.history:
-            for entry in reversed(st.session_state.history):
+        history = st.session_state.get("history", [])
+        if history:
+            for entry in reversed(history):
                 st.markdown(f"### 📌 {entry['title']} — {entry['timestamp']}")
                 st.code(entry["code"], language="javascript")
                 if entry.get("comment"):
                     st.markdown(f"💬 *Comment:* {entry['comment']}")
                 st.markdown(entry["feedback"], unsafe_allow_html=True)
                 st.markdown("---")
-
-            history_json = json.dumps(st.session_state.history, indent=2)
-            st.download_button("📅 Download History as JSON", history_json, file_name=f"codereview_history_{user_id}.json", mime="application/json")
-
-            df = pd.DataFrame(st.session_state.history)
-            csv_buffer = io.StringIO()
-            df.to_csv(csv_buffer, index=False)
-            st.download_button("📄 Download History as CSV", csv_buffer.getvalue(), file_name=f"codereview_history_{user_id}.csv", mime="text/csv")
-
-            if st.button("🗑️ Clear History"):
-                st.session_state.history.clear()
-                st.rerun()
         else:
-            st.info("No review history yet.")
+            st.info("No history yet.")
 
+    # Shared Comments
     st.markdown("## 🧠 Shared Comments Board")
-    all_comments = load_shared_comments()
-    visible_comments = [c for c in all_comments if c["title"] == current_title]
+    visible_comments = [c for c in load_shared_comments() if c["title"] == current_title]
 
     if visible_comments:
         for c in sorted(visible_comments, key=lambda x: -x["votes"]):

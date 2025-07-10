@@ -95,7 +95,6 @@ class MultiAgentStack(Stack):
         )
         self.response_table.grant_read_data(self.get_history_lambda)
 
-        # 📦 Presigned URL Lambda + S3
         bucket = s3.Bucket.from_bucket_name(self, "KnowledgeBaseBucket", kb_bucket_name)
 
         self.presign_lambda = _lambda.Function(
@@ -106,6 +105,20 @@ class MultiAgentStack(Stack):
             environment={"BUCKET_NAME": bucket.bucket_name}
         )
         bucket.grant_read_write(self.presign_lambda)
+
+        # ➕ New S3 bucket for Code Review Comments
+        review_bucket = s3.Bucket.from_bucket_name(self, "CodeReviewCommentsBucket", "securecodeecodereviewcomments")
+
+        # ➕ Lambda to handle presigned URLs for code review comments bucket
+        self.codereview_presign_lambda = _lambda.Function(
+            self, "CodeReviewPresignLambda",
+            runtime=_lambda.Runtime.PYTHON_3_11,
+            handler="lambda_function.lambda_handler",
+            code=_lambda.Code.from_asset(str(Path(__file__).resolve().parents[2] / "backend" / "lambda_codereview_presigned")),
+            environment={"SOURCE_BUCKET": review_bucket.bucket_name},
+            timeout=Duration.seconds(10)
+        )
+        review_bucket.grant_read_write(self.codereview_presign_lambda)
 
         self.log_group = logs.LogGroup(self, "ApiGatewayAccessLogs")
         self.api_role = iam.Role(
@@ -137,7 +150,6 @@ class MultiAgentStack(Stack):
             )
         )
 
-        # API Resources
         ask_resource = self.api.root.add_resource("ask")
         ask_resource.add_method("POST", apigateway.LambdaIntegration(self.submit_lambda))
         ask_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["POST"])
@@ -154,7 +166,14 @@ class MultiAgentStack(Stack):
         presigned_url_resource.add_method("POST", apigateway.LambdaIntegration(self.presign_lambda))
         presigned_url_resource.add_cors_preflight(allow_origins=apigateway.Cors.ALL_ORIGINS, allow_methods=["POST"])
 
-        # Alarm
+        # ➕ API Gateway for get-presigned-url-codereviewcomments
+        codereview_presign_resource = self.api.root.add_resource("get-presigned-url-codereviewcomments")
+        codereview_presign_resource.add_method("POST", apigateway.LambdaIntegration(self.codereview_presign_lambda))
+        codereview_presign_resource.add_cors_preflight(
+            allow_origins=apigateway.Cors.ALL_ORIGINS,
+            allow_methods=["POST"]
+        )
+
         cw.Alarm(
             self, "DLQAlarm",
             metric=self.dead_letter_queue.metric_approximate_number_of_messages_visible(),
@@ -164,7 +183,6 @@ class MultiAgentStack(Stack):
             comparison_operator=cw.ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD
         )
 
-        # Outputs
         CfnOutput(self, "SubmitLambdaName", value=self.submit_lambda.function_name, export_name="SubmitLambdaName")
         CfnOutput(self, "WorkerLambdaName", value=self.worker_lambda.function_name, export_name="WorkerLambdaName")
         CfnOutput(self, "GetAnswerLambdaName", value=self.get_answer_lambda.function_name, export_name="GetAnswerLambdaName")
@@ -175,3 +193,5 @@ class MultiAgentStack(Stack):
         CfnOutput(self, "ResponseTableName", value=self.response_table.table_name, export_name="ResponseTableName")
         CfnOutput(self, "PresignLambdaName", value=self.presign_lambda.function_name, export_name="PresignLambdaName")
         CfnOutput(self, "PresignApiUrl", value=self.api.url + "presigned-url", export_name="PresignApiUrl")
+        CfnOutput(self, "CodeReviewPresignLambdaName", value=self.codereview_presign_lambda.function_name, export_name="CodeReviewPresignLambdaName")
+        CfnOutput(self, "CodeReviewPresignApiUrl", value=self.api.url + "get-presigned-url-codereviewcomments", export_name="CodeReviewPresignApiUrl")

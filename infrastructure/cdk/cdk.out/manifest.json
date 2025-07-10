@@ -18,7 +18,7 @@
         "validateOnSynth": false,
         "assumeRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-deploy-role-${AWS::AccountId}-${AWS::Region}",
         "cloudFormationExecutionRoleArn": "arn:${AWS::Partition}:iam::${AWS::AccountId}:role/cdk-hnb659fds-cfn-exec-role-${AWS::AccountId}-${AWS::Region}",
-        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/9ad38668a7cd62a1109b51f44952c9503c5cb7a6b1dd1e367b787aa7b3d93720.json",
+        "stackTemplateAssetObjectUrl": "s3://cdk-hnb659fds-assets-${AWS::AccountId}-${AWS::Region}/ef5f4ebc2baa79162d8decc05616419279823b78f24dfd9c121f63b28f4bbeb9.json",
         "requiresBootstrapStackVersion": 6,
         "bootstrapStackVersionSsmParameter": "/cdk-bootstrap/hnb659fds/version",
         "additionalDependencies": [
@@ -148,6 +148,24 @@
             "data": "PresignedURLFunctionD44318B5"
           }
         ],
+        "/MultiAgentStack/CodeReviewPresignLambda/ServiceRole/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeReviewPresignLambdaServiceRoleBDAECE68"
+          }
+        ],
+        "/MultiAgentStack/CodeReviewPresignLambda/ServiceRole/DefaultPolicy/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeReviewPresignLambdaServiceRoleDefaultPolicyFE80EE1A"
+          }
+        ],
+        "/MultiAgentStack/CodeReviewPresignLambda/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeReviewPresignLambda1A62C962"
+          }
+        ],
         "/MultiAgentStack/ApiGatewayAccessLogs/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -181,7 +199,7 @@
         "/MultiAgentStack/RAGMultiAgentAPI/Deployment/Resource": [
           {
             "type": "aws:cdk:logicalId",
-            "data": "RAGMultiAgentAPIDeployment292FFC9A9c763766b02675fb496d8b317a54d4c7"
+            "data": "RAGMultiAgentAPIDeployment292FFC9A0352788622cd1901c5f65ec38144b657"
           }
         ],
         "/MultiAgentStack/RAGMultiAgentAPI/DeploymentStage.prod/Resource": [
@@ -316,6 +334,36 @@
             "data": "RAGMultiAgentAPIpresignedurlOPTIONS58D10C06"
           }
         ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-presigned-url-codereviewcomments/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetpresignedurlcodereviewcomments6908AE38"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-presigned-url-codereviewcomments/POST/ApiPermission.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-presigned-url-codereviewcomments": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetpresignedurlcodereviewcommentsPOSTApiPermissionMultiAgentStackRAGMultiAgentAPI9107A53BPOSTgetpresignedurlcodereviewcommentsD4AD58BA"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-presigned-url-codereviewcomments/POST/ApiPermission.Test.MultiAgentStackRAGMultiAgentAPI9107A53B.POST..get-presigned-url-codereviewcomments": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetpresignedurlcodereviewcommentsPOSTApiPermissionTestMultiAgentStackRAGMultiAgentAPI9107A53BPOSTgetpresignedurlcodereviewcomments51E12C6B"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-presigned-url-codereviewcomments/POST/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetpresignedurlcodereviewcommentsPOST45AE5556"
+          }
+        ],
+        "/MultiAgentStack/RAGMultiAgentAPI/Default/get-presigned-url-codereviewcomments/OPTIONS/Resource": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "RAGMultiAgentAPIgetpresignedurlcodereviewcommentsOPTIONS59CD4E26"
+          }
+        ],
         "/MultiAgentStack/DLQAlarm/Resource": [
           {
             "type": "aws:cdk:logicalId",
@@ -380,6 +428,18 @@
           {
             "type": "aws:cdk:logicalId",
             "data": "PresignApiUrl"
+          }
+        ],
+        "/MultiAgentStack/CodeReviewPresignLambdaName": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeReviewPresignLambdaName"
+          }
+        ],
+        "/MultiAgentStack/CodeReviewPresignApiUrl": [
+          {
+            "type": "aws:cdk:logicalId",
+            "data": "CodeReviewPresignApiUrl"
           }
         ],
         "/MultiAgentStack/CDKMetadata/Default": [

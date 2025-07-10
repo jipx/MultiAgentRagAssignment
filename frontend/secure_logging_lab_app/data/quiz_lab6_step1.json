@@ -1,0 +1,114 @@
+{
+  "questions": [
+    {
+      "question": "What is the primary purpose of using Morgan in this lab?",
+      "choices": [
+        "Database management",
+        "User authentication",
+        "Secure logging",
+        "File encryption"
+      ],
+      "answer": "Secure logging",
+      "explanation": "Morgan is used in this lab to apply secure logging practices in an Express.js application."
+    },
+    {
+      "question": "Which module is used to create a rotating log file?",
+      "choices": [
+        "fs",
+        "path",
+        "morgan",
+        "rotating-file-stream"
+      ],
+      "answer": "rotating-file-stream",
+      "explanation": "The rotating-file-stream module is used to create a rotating log file with a 12-hour interval."
+    },
+    {
+      "question": "What is the default format used when applying Morgan middleware?",
+      "choices": [
+        "combined",
+        "common",
+        "dev",
+        "tiny"
+      ],
+      "answer": "combined",
+      "explanation": "The lab instructions show that Morgan is initially applied using the 'combined' format: app.use(morgan('combined'))."
+    },
+    {
+      "question": "How often does the log file rotate in this lab setup?",
+      "choices": [
+        "Every 6 hours",
+        "Every 12 hours",
+        "Every 24 hours",
+        "Every week"
+      ],
+      "answer": "Every 12 hours",
+      "explanation": "The rotating log stream is set up with a 12-hour interval: interval: '12h'."
+    },
+    {
+      "question": "What is the purpose of creating a custom token in Morgan?",
+      "choices": [
+        "To encrypt logs",
+        "To log exceptions",
+        "To compress logs",
+        "To validate user input"
+      ],
+      "answer": "To log exceptions",
+      "explanation": "A custom token is created to log exceptions: morgan.token('exception', (req, res) => res.locals.errorMessage || '-');"
+    },
+    {
+      "question": "Which of the following is NOT included in the custom JSON log format?",
+      "choices": [
+        "method",
+        "url",
+        "ip",
+        "status code"
+      ],
+      "answer": "status code",
+      "explanation": "The custom JSON format includes method, URL, IP, and exceptions, but not the status code."
+    },
+    {
+      "question": "How is an exception simulated in the lab?",
+      "choices": [
+        "By throwing an error in a route",
+        "By setting wrong database credentials",
+        "By sending an invalid request",
+        "By overloading the server"
+      ],
+      "answer": "By setting wrong database credentials",
+      "explanation": "An exception is simulated by intentionally setting wrong credentials in the database configuration file."
+    },
+    {
+      "question": "What does the '-' in the exception field of a log entry indicate?",
+      "choices": [
+        "A server error",
+        "No exception occurred",
+        "Log rotation",
+        "Invalid input"
+      ],
+      "answer": "No exception occurred",
+      "explanation": "The '-' in the exception field indicates that no exception occurred during that request."
+    },
+    {
+      "question": "Which Node.js core modules are used in this lab for log management?",
+      "choices": [
+        "http and net",
+        "fs and path",
+        "crypto and zlib",
+        "stream and buffer"
+      ],
+      "answer": "fs and path",
+      "explanation": "The fs (file system) and path modules are used for managing log directories and file paths."
+    },
+    {
+      "question": "What security concern is mentioned regarding logs?",
+      "choices": [
+        "Logs may contain sensitive data",
+        "Logs can be easily hacked",
+        "Logging slows down the server",
+        "Logs consume too much disk space"
+      ],
+      "answer": "Logs may contain sensitive data",
+      "explanation": "The lab notes mention that exposing logs improperly may leak sensitive information, highlighting the security concern of logs potentially containing sensitive data."
+    }
+  ]
+}
