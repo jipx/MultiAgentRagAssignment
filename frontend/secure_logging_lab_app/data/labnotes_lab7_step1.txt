@@ -1,0 +1,51 @@
+# 🏫 School of Computing (SoC)
+
+## 🔐 Secure Coding: Practical 7  
+### Authentication and Authorization
+
+---
+
+### 🎯 Objectives
+After completing this lab, you should be able to:
+- ✅ Apply middleware for checking access rights
+- ✅ Hash passwords securely
+- ✅ Encrypt/Decrypt sensitive data
+
+---
+
+### 📦 Setup Instructions
+1. **Download and unzip** the provided source code for Practical 7.
+2. Study the middleware implementation in:  
+   `auth/VerifyToken.js`
+
+---
+
+### 🛡️ Middleware Tasks
+- **Implement `verifyAdmin`** middleware to ensure the JWT token contains the `"admin"` role.
+- **Apply `verifyToken` and `verifyAdmin`** to these routes in your Express app:
+  - `POST /user`
+  - `GET /user/:userid`
+  - `GET /user`
+  - `DELETE /user/:userid`
+
+---
+
+### 🔐 Security Enhancements
+
+#### A. Password Hashing
+- In `user.js`, modify the `insertUser` function:
+  - Hash the password using a secure algorithm (e.g., `bcrypt`)
+  - Encrypt the `username` before storing in the database (assumed sensitive for this exercise)
+
+#### B. Login Verification
+- In `user.js`, update `loginUser` to:
+  - Decrypt the stored username if needed
+  - Validate the password using bcrypt’s `compare` function
+
+---
+
+### 🧪 Testing
+- Use **Postman** to test:
+  - That token-protected endpoints correctly validate `verifyToken` and `verifyAdmin`
+  - That user registration stores hashed passwords and encrypted usernames
+  - That login functions correctly with hashed password validation

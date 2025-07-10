@@ -7,15 +7,18 @@ from utils import poll_for_answer
 ASK_URL = st.secrets["api"]["ask_url"]
 GET_URL = st.secrets["api"]["get_answer_url"]
 
-def render_lab_hint_tab():
+def render_lab_hint_tab(lab_choice="default_lab", step_choice="default_step"):
     st.subheader("💡 LabHints Agent")
 
-    user_id = st.text_input("👤 Student ID", value="student001", key="labhint_uid")
-    task_question = st.text_area("❓ Enter your task or question", height=150, key="labhint_question")
+    # Generate unique widget keys
+    base_key = f"{lab_choice}_{step_choice}".replace(" ", "_").lower()
+
+    user_id = st.text_input("👤 Student ID", value="student001", key=f"{base_key}_labhint_uid")
+    task_question = st.text_area("❓ Enter your task or question", height=150, key=f"{base_key}_labhint_question")
 
     labnotes = st.session_state.get("labnotes", "")
 
-    if st.button("Submit for Hint", key="labhint_submit"):
+    if st.button("Submit for Hint", key=f"{base_key}_labhint_submit"):
         # Construct full question with lab context
         full_question = f"Task: {task_question}\nContext:\n{labnotes}"
 
@@ -97,7 +100,7 @@ def render_lab_hint_tab():
                 st.markdown("**Hint:**")
                 st.markdown(f"> {entry['hint']}", unsafe_allow_html=True)
                 st.markdown("---")
-            if st.button("🗑️ Clear Hint History"):
+            if st.button("🗑️ Clear Hint History", key=f"{base_key}_clear_history"):
                 st.session_state.labhint_history.clear()
                 st.experimental_rerun()
         else:

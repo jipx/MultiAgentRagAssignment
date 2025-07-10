@@ -1,0 +1,114 @@
+{
+  "questions": [
+    {
+      "question": "What is the purpose of the verifyAdmin middleware?",
+      "choices": [
+        "To check if the user is logged in",
+        "To ensure the JWT token contains the 'admin' role",
+        "To validate the user's password",
+        "To encrypt sensitive data"
+      ],
+      "answer": "To ensure the JWT token contains the 'admin' role",
+      "explanation": "The verifyAdmin middleware is implemented to check if the JWT token contains the 'admin' role, ensuring only users with admin privileges can access certain routes."
+    },
+    {
+      "question": "Which routes should have both verifyToken and verifyAdmin middleware applied?",
+      "choices": [
+        "GET /login",
+        "POST /user",
+        "PUT /user/:userid",
+        "PATCH /user/:userid"
+      ],
+      "answer": "POST /user",
+      "explanation": "According to the lab notes, the POST /user route should have both verifyToken and verifyAdmin middleware applied."
+    },
+    {
+      "question": "What security enhancement is required for the insertUser function in user.js?",
+      "choices": [
+        "Encrypt the password",
+        "Hash the password",
+        "Store the password in plaintext",
+        "Remove the password"
+      ],
+      "answer": "Hash the password",
+      "explanation": "The lab instructions specify that the password should be hashed using a secure algorithm like bcrypt before storing it in the database."
+    },
+    {
+      "question": "What additional security measure is required for the username in the insertUser function?",
+      "choices": [
+        "Hash the username",
+        "Encrypt the username",
+        "Store the username in plaintext",
+        "Remove the username"
+      ],
+      "answer": "Encrypt the username",
+      "explanation": "The lab notes state that the username should be encrypted before storing it in the database, as it is assumed to be sensitive information for this exercise."
+    },
+    {
+      "question": "What modification is needed in the loginUser function for password verification?",
+      "choices": [
+        "Use MD5 hashing",
+        "Use string comparison",
+        "Use bcrypt's compare function",
+        "Use SHA-256 hashing"
+      ],
+      "answer": "Use bcrypt's compare function",
+      "explanation": "The lab instructions specify that the loginUser function should be updated to validate the password using bcrypt's compare function."
+    },
+    {
+      "question": "What tool is recommended for testing the implemented security measures?",
+      "choices": [
+        "cURL",
+        "Postman",
+        "Browser Developer Tools",
+        "Wireshark"
+      ],
+      "answer": "Postman",
+      "explanation": "The lab notes recommend using Postman to test the token-protected endpoints, user registration, and login functionality."
+    },
+    {
+      "question": "What should be done with the stored username during the login process?",
+      "choices": [
+        "Hash it",
+        "Encrypt it",
+        "Decrypt it",
+        "Leave it as is"
+      ],
+      "answer": "Decrypt it",
+      "explanation": "The lab instructions state that the loginUser function should decrypt the stored username if needed during the login process."
+    },
+    {
+      "question": "Which of the following routes does NOT require both verifyToken and verifyAdmin middleware?",
+      "choices": [
+        "POST /user",
+        "GET /user/:userid",
+        "GET /user",
+        "GET /login"
+      ],
+      "answer": "GET /login",
+      "explanation": "The lab notes do not mention applying verifyToken and verifyAdmin middleware to the GET /login route, unlike the other listed routes."
+    },
+    {
+      "question": "What is the primary purpose of using bcrypt for password hashing?",
+      "choices": [
+        "To make passwords shorter",
+        "To make passwords longer",
+        "To make password cracking more difficult",
+        "To encrypt passwords"
+      ],
+      "answer": "To make password cracking more difficult",
+      "explanation": "Bcrypt is used for securely hashing passwords, making it computationally expensive and time-consuming for attackers to crack the hashed passwords."
+    },
+    {
+      "question": "What should be verified when testing the user registration process?",
+      "choices": [
+        "That passwords are stored in plaintext",
+        "That usernames are stored in plaintext",
+        "That passwords are hashed and usernames are encrypted",
+        "That both passwords and usernames are hashed"
+      ],
+      "answer": "That passwords are hashed and usernames are encrypted",
+      "explanation": "According to the lab instructions, testing should verify that user registration stores hashed passwords and encrypted usernames in the database."
+    }
+  ]
+}

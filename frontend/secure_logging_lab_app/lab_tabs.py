@@ -3,9 +3,8 @@ import os
 import difflib
 import json
 from pathlib import Path
-from lab_hint_tab import render_lab_hint_tab  # Add at top
-
-from code_review_tab import render_code_review_tab  
+from lab_hint_tab import render_lab_hint_tab
+from code_review_tab import render_code_review_tab
 
 def get_filename(prefix, lab, step, ext):
     base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "data"))
@@ -48,41 +47,49 @@ def save_quiz_to_data_folder(quiz_data, lab, step):
         st.error(f"❌ Could not save quiz: {e}")
         return None
 
+def get_uploaded_or_default(key, lab, step):
+    lab_step_key = f"{lab.lower()}_{step.lower()}"
+    uploaded_group = st.session_state.uploaded.get(lab_step_key, {})
+    ext = "json" if key == "quiz" else "txt"
+    return uploaded_group.get(key) or get_filename(key, lab, step, ext)
+
 def render_lab_tabs(lab_choice, step_choice, uploaded=None):
     if "uploaded" not in st.session_state:
         st.session_state.uploaded = uploaded or {}
 
-    tabs = st.tabs(["Lab", "Hint", "Quiz", "Solution", "Lab Score","Code Review"])
+    tabs = st.tabs(["Lab", "Hint", "Quiz", "Solution", "Lab Score", "Code Review"])
+    lab_step_key = f"{lab_choice.lower()}_{step_choice.lower()}"
+    uploaded_group = st.session_state.uploaded.get(lab_step_key, {})
 
     with tabs[0]:
-        st.header("Lab Content")
-        lab_file = (
-            st.session_state.uploaded.get("labnotes")
-            if st.session_state.uploaded.get("labnotes")
-            else get_filename("labnotes", lab_choice, step_choice, "txt")
-        )
-        lab_notes = load_file_content(lab_file, "Lab notes not found.")
-        st.code(lab_notes, language="javascript")
-
-          # ✅ Store in session state for reuse (e.g. LabHint tab)
+        st.header("🧪 Lab Content")
+        lab_file = get_uploaded_or_default("labnotes", lab_choice, step_choice)
+        lab_notes = load_file_content(lab_file, "⚠️ Lab notes not found.")
         st.session_state.labnotes = lab_notes
 
-    with tabs[1]:   
+        if lab_notes:
+            with st.expander("📄 View Full Lab Notes", expanded=True):
+                st.markdown(lab_notes)
+            st.download_button(
+                label="⬇️ Download Lab Notes",
+                data=lab_notes,
+                file_name=os.path.basename(lab_file),
+                mime="text/plain"
+            )
+        else:
+            st.info("No lab notes available.")
+
+    with tabs[1]:
         st.header("Lab Hint")
-        render_lab_hint_tab()
-        
+        render_lab_hint_tab(lab_choice, step_choice)
 
     with tabs[2]:
         st.header("🧠 Quiz")
-        quiz_file = (
-            st.session_state.uploaded.get("quiz")
-            if st.session_state.uploaded.get("quiz")
-            else get_filename("quiz", lab_choice, step_choice, "json")
-        )
+        quiz_file = get_uploaded_or_default("quiz", lab_choice, step_choice)
         quiz_data = load_quiz_data(quiz_file)
         questions = quiz_data.get("questions", [])
 
-        if st.session_state.uploaded.get("quiz") and questions:
+        if uploaded_group.get("quiz") and questions:
             save_quiz_to_data_folder(quiz_data, lab_choice, step_choice)
 
         if questions:
@@ -93,10 +100,11 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
 
             for idx, q in enumerate(questions):
                 st.markdown(f"**Q{idx+1}: {q['question']}**")
+                key_suffix = f"{lab_choice}_{step_choice}_{idx}".replace(" ", "_").lower()
                 selected = st.radio(
                     f"Choices for Q{idx+1}",
                     q.get("choices", []),
-                    key=f"q_{idx}"
+                    key=f"q_{key_suffix}"
                 )
                 st.session_state.submitted_answers[idx] = selected
                 st.markdown("---")
@@ -107,8 +115,8 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
                     correct = q.get("answer", "").strip().lower()
                     submitted = st.session_state.submitted_answers.get(idx, "").strip().lower()
                     if submitted == correct:
-                        score += 1
                         st.success(f"✅ Q{idx+1} Correct")
+                        score += 1
                     else:
                         st.error(f"❌ Q{idx+1} Incorrect (Correct: {q['answer']})")
                         if "explanation" in q:
@@ -119,17 +127,8 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
 
     with tabs[3]:
         st.header("🔍 Code Difference (Unified View)")
-
-        solution_file = (
-            st.session_state.uploaded.get("solution")
-            if st.session_state.uploaded.get("solution")
-            else get_filename("solution", lab_choice, step_choice, "txt")
-        )
-        original_file = (
-            st.session_state.uploaded.get("original")
-            if st.session_state.uploaded.get("original")
-            else get_filename("original", lab_choice, step_choice, "txt")
-        )
+        solution_file = get_uploaded_or_default("solution", lab_choice, step_choice)
+        original_file = get_uploaded_or_default("original", lab_choice, step_choice)
 
         solution_content = load_file_content(solution_file, "Solution not available.")
         original_content = load_file_content(original_file, "Original code not available.")
@@ -147,7 +146,6 @@ def render_lab_tabs(lab_choice, step_choice, uploaded=None):
 
         if diff_text.strip():
             st.code(diff_text, language="diff")
-
             st.subheader("💬 Reviewer Comment")
             user_comment = st.text_area("Leave your feedback:", height=150)
 

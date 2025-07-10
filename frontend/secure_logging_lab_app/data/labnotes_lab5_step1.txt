@@ -1,34 +1,60 @@
-Practical 5 - Secure Logging with Morgan
-This project demonstrates how to apply secure logging practices in an Express.js application using Morgan and rotating-file-stream.
 
-✅ Objectives
-Apply Morgan for logging
-Create custom tokens
-Log entries to a file using a rotating file stream
-Log custom exception errors in a JSON format
+# 🧪 Practical 5 – Secure Logging with Morgan
 
-📦 Setup
-Download and unzip the project files.
-Navigate to firstExpressServer/.
-Run the following command to install required dependencies:
+This lab demonstrates how to apply **secure logging** practices in an `Express.js` application using **Morgan** and **rotating-file-stream**.
+
+---
+
+## ✅ Objectives
+
+- ✅ Apply **Morgan** for logging
+- ✅ Create **custom tokens**
+- ✅ Log entries to a **rotating file**
+- ✅ Log **exception errors** in structured **JSON** format
+
+---
+
+## 📦 Setup Instructions
+
+1. **Download and unzip** the project files.
+2. Navigate to the `firstExpressServer/` directory.
+3. Install dependencies:
+
+```bash
 npm install
 npm install morgan rotating-file-stream
+```
 
-🔧 Step-by-Step Instructions
-Step 1: Console Logging with Morgan
-In controller/app.js, import morgan and apply logging middleware:
+---
+
+## 🔧 Step-by-Step Instructions
+
+### 🔹 Step 1: Console Logging with Morgan
+
+In `controller/app.js`, add:
+
+```javascript
 const morgan = require('morgan');
 app.use(morgan('combined'));
+```
 
-Run the server and observe Apache-style log output in the console.
+👉 Run the server and observe **Apache-style logs** in the terminal.
 
-Step 2: Apply Rotating Log File
-Install rotating-file-stream and import necessary modules:
+---
+
+### 🔹 Step 2: Apply Rotating Log File
+
+Import modules:
+
+```javascript
 const fs = require('fs');
 const path = require('path');
 const rfs = require('rotating-file-stream');
+```
 
-Set up a rotating log stream (12-hour interval) and apply it:
+Configure rotating log:
+
+```javascript
 const logDirectory = path.join(__dirname, '..', 'log');
 if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory);
@@ -37,14 +63,23 @@ const accessLogStream = rfs.createStream('log.txt', {
     interval: '12h',
     path: logDirectory,
 });
+
 app.use(morgan('combined', { stream: accessLogStream }));
+```
 
-Step 3: Create a Custom Token for Exception Logging
-Add this to define a custom token:
+---
+
+### 🔹 Step 3: Create a Custom Token
+
+```javascript
 morgan.token('exception', (req, res) => res.locals.errorMessage || '-');
+```
 
-Step 4: Define Custom JSON Format
-Add a new format that includes method, URL, IP, and exceptions:
+---
+
+### 🔹 Step 4: Define a Custom JSON Format
+
+```javascript
 morgan.format('jsonFormat', (tokens, req, res) => {
     return JSON.stringify({
         exception: tokens.exception(req, res),
@@ -54,52 +89,100 @@ morgan.format('jsonFormat', (tokens, req, res) => {
         date: new Date().toUTCString()
     });
 });
+```
 
-Apply this format to both console and file:
+Apply format:
+
+```javascript
 app.use(morgan('jsonFormat', { stream: accessLogStream }));
 app.use(morgan('jsonFormat'));
+```
 
-Step 5: Modify Routes to Set Error Message
-In any route (e.g., /user), add this in the else block:
+---
+
+### 🔹 Step 5: Log Exceptions in Routes
+
+In any route handler (e.g., `/user`):
+
+```javascript
 res.locals.errorMessage = err.toString();
+```
 
-Step 6: Simulate an Exception
-Edit model/databaseConfig.js and intentionally set wrong credentials:
-user: 'root12' // invalid user to simulate error
+---
 
-Test with /user and check log/log.txt for structured JSON log entries.
+### 🔹 Step 6: Simulate an Exception
 
-✅ Example Log Output
-No Exception:
+In `model/databaseConfig.js`, intentionally misconfigure credentials:
+
+```javascript
+user: 'root12' // 🚫 Invalid user
+```
+
+👉 Access `/user` and verify that logs are stored in `log/log.txt`.
+
+---
+
+## 📝 Example Log Output
+
+**✅ Without Exception**:
+```json
 {"exception":"-","method":"GET","url":"/user","ip":"::1","date":"Tue, 06 Oct 2020 06:32:10 GMT"}
+```
 
-With Exception:
-{"exception":"Error: ER_ACCESS_DENIED_ERROR: Access denied for user 'root12'@'localhost' (using password: YES)","method":"GET","url":"/user","ip":"::1","date":"Tue, 06 Oct 2020 06:38:34 GMT"}
+**⚠️ With Exception**:
+```json
+{"exception":"Error: ER_ACCESS_DENIED_ERROR: Access denied for user 'root12'@'localhost'","method":"GET","url":"/user","ip":"::1","date":"Tue, 06 Oct 2020 06:38:34 GMT"}
+```
 
-✅ Test Your Application
-Run the server using node server.js.
-Use Postman or browser to access /user and /user/:id.
-Check log/log.txt for updated structured log entries.
+---
 
-🎓 Learning Points
-Middleware Usage: How to apply and configure middleware in Express.
-Logging Best Practices: Importance of logging format and location (console vs file).
-Morgan Customization: Ability to define tokens and output formats, including JSON.
-Error Handling: Capturing and logging runtime errors in a structured format.
-Directory Management: Using path and fs modules to manage cross-platform log directories.
-Security Awareness: Understanding that exposing logs improperly may leak sensitive information.
+## ✅ Test Your Application
 
-🛠️ Troubleshooting Tips
-❗ Logs Not Showing Up
-Check if the log/ directory exists. If not, create it manually or verify directory permissions.
-❗ No Exception in Logs
-Ensure res.locals.errorMessage = err.toString(); is set in your route's error block.
-Confirm your route is actually throwing an error (e.g., by using wrong DB credentials).
-❗ Morgan Not Logging
-Ensure morgan('jsonFormat') is applied after the body parser and before your routes.
-❗ Rotating Logs Not Working
-Ensure rotating-file-stream is installed: npm install rotating-file-stream
-Confirm the interval is set to '12h' and that the stream path is correct.
-❗ App Crashes on Startup
-Verify all modules (morgan, fs, path, rotating-file-stream) are properly required.
-Use console.log() to debug specific setup steps in app.js.
+- Run using: `node server.js`
+- Access:
+  - `http://localhost:3000/user`
+  - `http://localhost:3000/user/:id`
+- Check `log/log.txt` for structured JSON log entries.
+
+---
+
+## 🎓 Learning Points
+
+| Topic | Description |
+|-------|-------------|
+| **Middleware** | Apply and configure logging middleware. |
+| **Logging** | Understand file vs console logging. |
+| **Morgan** | Customize tokens and formats. |
+| **Error Handling** | Capture runtime errors for auditing. |
+| **Filesystem** | Cross-platform directory creation and use. |
+| **Security** | Avoid leaking sensitive logs improperly. |
+
+---
+
+## 🛠️ Troubleshooting Tips
+
+❗ **Logs Not Showing Up**
+- Ensure `log/` directory exists.
+- Check file permissions.
+
+❗ **No Exception in Logs**
+- Use `res.locals.errorMessage = err.toString();`
+- Trigger real errors for testing.
+
+❗ **Morgan Not Logging**
+- Must apply Morgan **after body parser**, before routes.
+
+❗ **Rotating Logs Not Working**
+- Confirm:
+  - `npm install rotating-file-stream`
+  - Proper `interval` and `path` config.
+
+❗ **App Crashes on Startup**
+- Double-check:
+  - All required modules are installed
+  - Paths are correct
+- Use `console.log()` for debugging setup steps.
+
+---
+
+🏁 **End of Practical 5**

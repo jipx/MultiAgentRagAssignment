@@ -1,0 +1,119 @@
+# 🏫 School of Computing (SoC)
+
+## 🧪 Secure Coding – Practical 6  
+**Topic:** Secure Code Against **Cross-Site Scripting (XSS)** and **SQL Injection (SQLi)**
+
+---
+
+## 🔐 Securing Revision Practical Code
+
+1. 📥 **Download** the source codes for Practical 6 and **unzip** the files.
+
+2. 📂 **Download** the SQL script and **run it in MySQL**.
+
+3. ⚙️ **Update** your `databaseConfig.js` file with the correct database login credentials **if necessary**.
+
+4. 💻 **Run the following commands** in both the `firstExpressServer` and `firstFrontEnd` directories:
+
+    ```bash
+    npm install
+    node server.js
+    ```
+
+5. 🌐 **Navigate to:**
+
+    ```
+    http://localhost:3001/viewUsers.html
+    ```
+
+6. 🧪 **Stored XSS Attack:**
+
+    - Inject an alert script into the database.
+    - The alert should **pop up** when you are redirected to `viewUsers.html`.
+
+7. ⚠️ **SQL Injection Vulnerability:**
+
+    - The page `viewUsers.html` is **vulnerable to SQL injection**.
+    - Try injecting SQL to retrieve data from other tables.
+
+---
+
+## 🧰 Remediation Steps – Securing Web Services API
+
+To mitigate these issues, you’ll secure the backend API with:
+
+- ✅ Proper **input validation**
+- ✅ Output **sanitization**
+
+---
+
+## 📁 Create a New Directory: `validation/`
+
+Inside `FirstBackEnd`, create a new folder called `validation`.
+
+Then create a new file:
+
+```
+validationFn.js
+```
+
+This file will contain middleware functions.
+
+---
+
+## 📄 `validationFn.js` Content
+
+### A) ✍️ `validateRegister` Middleware Function
+
+Validates input from the client (username, email, password).  
+Returns **status 500** if validation fails.
+
+**Rules:**
+
+- ✅ **Username**: alphabets, spaces, `'` and `,` only.
+- ✅ **Email**: must be valid (regex check).
+- ✅ **Password**: 
+  - At least one uppercase
+  - At least one lowercase
+  - At least one number
+  - At least 8 characters
+
+---
+
+### B) 🔢 `validateUserid` Middleware Function
+
+Checks that `userid` is a valid number.  
+Returns **status 500** if validation fails.
+
+---
+
+### C) 🧼 `sanitizeResult` Function
+
+Sanitizes **string values** in the result array from MySQL query.  
+This ensures output data sent back to the frontend is **clean and safe**.
+
+---
+
+## 🧩 Apply Middleware in `app.js`
+
+Update `app.js`:
+
+- Use `validateRegister` and `validateUserid` middleware in appropriate API endpoints.
+- Apply `sanitizeResult` to **GET /user** and **GET /user/:userid** responses.
+
+---
+
+## 🛡️ Fixing SQL Injection in `user.js`
+
+Update your query logic to use parameterized queries or escape inputs properly.
+
+---
+
+## ✅ Final Test
+
+1. Run the app.
+2. Register users and query users.
+3. Confirm:
+   - No alert boxes are triggered.
+   - No SQL injections succeed.
+   - Input errors are handled gracefully.
