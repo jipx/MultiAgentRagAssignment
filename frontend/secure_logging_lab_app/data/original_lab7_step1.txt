@@ -1,0 +1,35 @@
+# 🚨 Insecure Version of verifyToken.js
+
+```javascript
+// 🚨 Insecure verifyToken.js – for demonstration only
+const jwt = require("jsonwebtoken");
+
+function verifyToken(req, res, next) {
+  const token = req.headers["authorization"]; // ❌ Does not check "Bearer" format
+
+  if (!token) {
+    return res.status(401).json({ message: "No token provided" });
+  }
+
+  // ❌ Uses hardcoded secret instead of environment variable
+  jwt.verify(token, "hardcoded_secret", (err, decoded) => {
+    if (err) {
+      // ❌ Sends back raw error details (leaks internal info)
+      return res.status(403).json({ error: err.message });
+    }
+
+    // ❌ Attaches decoded token to a generic property
+    req.user = decoded;
+    next();
+  });
+}
+
+module.exports = verifyToken;
+```
+
+## 🔒 Insecurity Highlights:
+- Hardcoded secret key
+- No check for "Bearer" prefix
+- Raw error messages returned to the client
+- No expiration handling
+- Uses `req.user` directly without validation

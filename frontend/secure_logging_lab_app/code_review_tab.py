@@ -82,27 +82,20 @@ def render_code_review_tab():
 
     user_id = st.text_input("👤 Student ID", value="student001", key="codereview_uid")
 
-    # Load grouped examples
     grouped_examples = fetch_all_examples_grouped()
     categories = sorted(grouped_examples.keys())
-
-    # Create labels with descriptions
     category_labels = [f"{cat} – {CATEGORY_DESCRIPTIONS.get(cat, '')}" for cat in categories]
     label_to_cat = dict(zip(category_labels, categories))
 
     selected_label = st.radio("📂 Choose OWASP Category", category_labels, horizontal=True)
     selected_category = label_to_cat[selected_label]
 
-    # Get examples in the selected category
     examples = grouped_examples[selected_category]
     option_labels = [f"{ex['example_id']} – {ex['title']}" for ex in examples]
     selected_label = st.selectbox(f"📚 Select Example from {selected_category}", ["Select one..."] + option_labels)
 
     if selected_label != "Select one...":
-        selected_example = next(
-            (ex for ex in examples if f"{ex['example_id']} – {ex['title']}" == selected_label),
-            None
-        )
+        selected_example = next((ex for ex in examples if f"{ex['example_id']} – {ex['title']}" == selected_label), None)
         if selected_example:
             default_code = selected_example["code"]
             current_title = selected_example["title"]
@@ -119,7 +112,6 @@ def render_code_review_tab():
     student_code = st.text_area("💻 Paste your code here", value=default_code, height=300)
     discussion_comment = st.text_area("💬 Comment or question", placeholder="Why is this vulnerable?")
 
-    # Submit comment only
     if st.button("📂 Submit Comment Only"):
         if not student_code.strip():
             st.warning("⚠️ Paste some code first.")
@@ -130,7 +122,6 @@ def render_code_review_tab():
             st.success("✅ Comment submitted.")
             st.rerun()
 
-    # Submit for code review
     if st.button("🧠 Submit for Code Review"):
         if not student_code.strip():
             st.warning("⚠️ Paste some code to review.")
@@ -154,9 +145,21 @@ def render_code_review_tab():
 
             with st.spinner("Awaiting feedback..."):
                 answer = poll_for_answer(ANSWER_URL, request_id, max_attempts=10, delay_sec=3)
+                feedback = extract_codereview_feedback(answer)
 
-            feedback = extract_codereview_feedback(answer)
-            st.markdown("### 🧾 Feedback")
+            if st.session_state.get("lecturer_authenticated"):
+                try:
+                    raw_body = answer.get("answer", {}).get("body", "{}")
+                    parsed_body = json.loads(raw_body)
+                    hardened_code = parsed_body.get("message", {}).get("answer", {}).get("hardened_code", "")
+
+                    if hardened_code:
+                        with st.expander("🔐 View Hardened (Secure) Code", expanded=False):
+                            st.code(hardened_code, language="javascript")
+                except Exception as e:
+                    st.warning(f"⚠️ Hardened code parsing failed: {e}")
+
+            st.markdown("### 📟 Feedback")
             st.markdown(feedback, unsafe_allow_html=True)
 
             st.session_state.setdefault("history", []).append({
@@ -170,8 +173,7 @@ def render_code_review_tab():
         except Exception as e:
             st.error(f"❌ Error: {e}")
 
-    # Review History
-    with st.expander("🗂️ Review History", expanded=False):
+    with st.expander("📂 Review History", expanded=False):
         history = st.session_state.get("history", [])
         if history:
             for entry in reversed(history):
@@ -184,14 +186,13 @@ def render_code_review_tab():
         else:
             st.info("No history yet.")
 
-    # Shared Comments
     st.markdown("## 🧠 Shared Comments Board")
     visible_comments = [c for c in load_shared_comments() if c["title"] == current_title]
 
     if visible_comments:
         for c in sorted(visible_comments, key=lambda x: -x["votes"]):
             st.markdown(f"**👤 {c['user_id']}** — _{c['timestamp']}_")
-            st.code(c["code"], language="javascript")
+            st.markdown(c["code"])
             st.markdown(f"💬 {c['comment']}")
             st.markdown(f"👍 Votes: {c['votes']}")
             if user_id not in c.get("voters", []):
