@@ -621,3 +621,134 @@ Example: A breach that leaks your DB will reveal users' passwords in plain text.
 
 Mitigation: Always hash passwords with bcrypt or Argon2 before storing them.
 ```
+
+## Appendix I
+
+
+# 🎙️ AI-Narrated Just-in-Time Tutorial Video Generator
+
+This module transforms Markdown-based lab tutorials into narrated tutorial videos using AWS services like Polly, Lambda, and S3. It is designed to help lecturers provide dynamic, accessible learning materials based on quiz analytics and topic difficulty.
+
+## 🚀 Features
+
+- Upload `.md` lab tutorials via Streamlit
+- Convert to speech using Amazon Polly
+- Render synchronized video (audio + static slide or animated text)
+- Upload to S3 using presigned URLs
+- Optionally publish to YouTube
+- Triggered on `.md` upload or update in S3 (via EventBridge)
+
+---
+
+## 🛠️ System Architecture
+
+```mermaid
+graph TD
+  A[Streamlit Upload (.md)] -->|Presigned PUT| B[S3 Bucket: tutorials/]
+  B -->|S3 PutObject Event| C[EventBridge Rule]
+  C --> D[Lambda: NarrationGenerator]
+  D --> E[Amazon Polly (voice)]
+  D --> F[FFMPEG video render]
+  F --> G[S3 Upload (presigned PUT)]
+  G -->|Optional| H[YouTube API Upload]
+```
+
+---
+
+## 📁 Folder Structure
+
+```
+📦backend/
+ ┣ 📜lambda_narrate_video.py
+ ┣ 📜ffmpeg_script.sh
+ ┗ 📜polly_utils.py
+
+📦frontend/
+ ┗ 📜streamlit_app.py
+
+📄 README.md
+```
+
+---
+
+## 📦 Prerequisites
+
+- AWS CLI configured
+- FFmpeg layer or binary accessible in Lambda
+- Streamlit >= 1.20
+- IAM roles for S3, Polly, and Lambda
+
+---
+
+## 🔧 Lambda Environment Variables
+
+| Variable Name   | Description                          |
+|----------------|--------------------------------------|
+| VOICE_ID        | Polly voice to use (e.g., `Joanna`) |
+| OUTPUT_BUCKET   | S3 bucket to store generated videos |
+| REGION          | AWS region (e.g., `us-east-1`)      |
+
+---
+
+## 🧪 Local Test (Lambda)
+
+```bash
+python lambda_narrate_video.py --input tutorial.md --voice Joanna
+```
+
+---
+
+## 🎛️ Streamlit Usage
+
+```bash
+streamlit run frontend/streamlit_app.py
+```
+
+Features:
+- Upload tutorial.md
+- Preview video player
+- "Generate Video" triggers backend API
+- "Upload to YouTube" if desired
+
+---
+
+## 🔐 Permissions and IAM
+
+Minimum IAM policy for Lambda:
+
+```json
+{
+  "Effect": "Allow",
+  "Action": [
+    "polly:SynthesizeSpeech",
+    "s3:PutObject",
+    "s3:GetObject",
+    "s3:PutObjectAcl"
+  ],
+  "Resource": "*"
+}
+```
+
+---
+
+## 🎓 Pedagogical Value
+
+- **Multimodal learning**: Supports visual + auditory engagement
+- **Just-in-time creation**: Videos only generated when new tutorials are added
+- **Scalable**: Auto-triggers and AWS-native pipeline
+- **Integrates**: Directly into Streamlit + quiz difficulty analytics
+
+---
+
+## 📌 To Do
+
+- [ ] Slide-by-slide video output
+- [ ] Highlight syncing with narration
+- [ ] YouTube metadata editor
+- [ ] Viewer analytics dashboard
+
+---
+
+## 📬 Contact
+
+For integration help or educational use cases: `edtech-support@example.edu`
