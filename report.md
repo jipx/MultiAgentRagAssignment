@@ -65,7 +65,7 @@ https://app.eraser.io/workspace/EGa4u8QN1AtBzCPDdjF6?origin=share
 [ Streamlit ]
    └─ Renders the quiz for user interaction
 ```
-
+[Watch the 3 miniute video on YouTube](https://www.youtube.com/watch?v=D92BFXhyBKc)
 ---
 
 ## Pedagogical Foundations
