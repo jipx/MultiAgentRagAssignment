@@ -4,6 +4,8 @@ This project sets up a multi-agent Retrieval-Augmented Generation (RAG) architec
 
 ## 🚀 Architecture Components
 
+[![Watch the 3 miniute video on YouTube](https://img.youtube.com/vi/cNqzzDHiTxs/0.jpg)](https://www.youtube.com/watch?v=cNqzzDHiTxs)
+
 - **API Gateway**: Provides three endpoints:
   - `POST /ask`: Submit a question (with throttling settings)
   - `GET /get-answer`: Retrieve answer by `request_id`
