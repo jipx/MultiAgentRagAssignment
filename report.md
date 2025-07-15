@@ -337,7 +337,8 @@ A CloudWatch composite dashboard combines these metrics with alarm thresholds an
 
 ## Appendix F: Backend CDK Deployment Summary
 The backend infrastructure is provisioned using AWS CDK (Cloud Development Kit) and deploys a fully serverless architecture for adaptive lab-based quiz generation. The components include:
-
+[![Watch the 3 miniute video on YouTube](https://img.youtube.com/vi/cNqzzDHiTxs/0.jpg)](https://www.youtube.com/watch?v=cNqzzDHiTxs)
+---
 🔧 Core Components
 Component	Details
 API Gateway	REST API with endpoints /ask, /get-answer, /get-history, /presigned-url. CORS enabled. CloudWatch logging with custom access log format and throttling controls.
